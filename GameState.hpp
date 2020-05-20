@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include <vector>
 
 enum class PieceType
@@ -19,6 +20,8 @@ enum class Ownership
     White,
     Black
 };
+
+Ownership negate(Ownership);
 
 struct Field
 {
@@ -40,9 +43,12 @@ struct ChessGameState
 
     void apply(MoveType move)
     {
-        state[move.colTo][move.rowTo] = state[move.colFrom][move.rowFrom];
-        state[move.colFrom][move.rowFrom] = Field();
+        matrix[move.colTo][move.rowTo] = matrix[move.colFrom][move.rowFrom];
+        matrix[move.colFrom][move.rowFrom] = Field();
     }
 
-    GameMatrix state;
+    GameMatrix matrix;
 };
+
+std::ostream& operator<<(std::ostream& os, const ChessGameState::MoveType& obj);
+

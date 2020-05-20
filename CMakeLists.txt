@@ -11,32 +11,15 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# QtCreator supports the following variables for Android, which are identical to qmake Android variables.
-# Check http://doc.qt.io/qt-5/deployment-android.html for more information.
-# They need to be set before the find_package(Qt5 ...) call.
 
-#if(ANDROID)
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-#    if (ANDROID_ABI STREQUAL "armeabi-v7a")
-#        set(ANDROID_EXTRA_LIBS
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libcrypto.so
-#            ${CMAKE_CURRENT_SOURCE_DIR}/path/to/libssl.so)
-#    endif()
-#endif()
-
+# add sfml
+set(SFML_DIR "~/lib/SFML-2.5.1/lib/cmake/SFML")
+find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
-if(ANDROID)
-  add_library(pwr-tic-tac SHARED
+
+add_executable(pwr-tic-tac
     main.cpp
-    widget.cpp
-    widget.h
-  )
-else()
-  add_executable(pwr-tic-tac
-    main.cpp
-    widget.cpp
-    widget.h
     GraphList.hpp
     VoidType.hpp
     MinMax.cpp
@@ -46,7 +29,14 @@ else()
     IBrancher.hpp
     ChessBasicBrancher.hpp
     ChessBasicBrancher.cpp
-  )
-endif()
+    ChessGame.hpp
+    widgets/QSFMLWidget.cpp
+    widgets/QSFMLWidget.hpp
+    widgets/ChessSFMLWidget.cpp
+    widgets/ChessSFMLWidget.hpp
+    Observer/Observer.hpp
+    Observer/Subject.hpp
+)
 
-target_link_libraries(pwr-tic-tac PRIVATE Qt5::Widgets)
+
+target_link_libraries(pwr-tic-tac PRIVATE Qt5::Widgets sfml-graphics sfml-audio)

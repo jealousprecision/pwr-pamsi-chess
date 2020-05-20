@@ -20,19 +20,19 @@ void upLeft(int& c, int& r) {c--, r--;}
 
 void addDiagonalMovements(std::vector<MoveType>& movements, const ChessGameState& source, unsigned col, unsigned row)
 {
-    auto player = source.state[col][row].owner;
+    auto player = source.matrix[col][row].owner;
 
-    for (auto& deltaFunc : {downRight, downLeft, upRight, upLeft})
+    for (auto deltaFunc : {downRight, downLeft, upRight, upLeft})
     {
         int c = col, r = row;
 
         deltaFunc(c, r);
         for (; inBounds(c, r); deltaFunc(c, r))
         {
-            if (source.state[c][r].owner == player)
+            if (source.matrix[c][r].owner == player)
                 break;
             movements.push_back(MoveType{col, row, static_cast<unsigned>(c), static_cast<unsigned>(r)});
-            if (source.state[c][r].owner != Ownership::None)
+            if (source.matrix[c][r].owner != Ownership::None)
                 break;
         }
     }
@@ -45,18 +45,18 @@ void right(int& c, int& r) { c++; }
 
 void addLineMovements(std::vector<MoveType>& movements, const ChessGameState& source, unsigned col, unsigned row)
 {
-    auto player = source.state[col][row].owner;
-    for (auto& deltaFunc : {down, up, left, right})
+    auto player = source.matrix[col][row].owner;
+    for (auto deltaFunc : {down, up, left, right})
     {
         int c = col, r = row;
 
         deltaFunc(c, r);
         for (; inBounds(c, r); deltaFunc(c, r))
         {
-            if (source.state[c][r].owner == player)
+            if (source.matrix[c][r].owner == player)
                 break;
             movements.push_back(MoveType{col, row, static_cast<unsigned>(c), static_cast<unsigned>(r)});
-            if (source.state[c][r].owner != Ownership::None)
+            if (source.matrix[c][r].owner != Ownership::None)
                 break;
         }
     }
@@ -72,7 +72,7 @@ std::vector<void(*)(int&, int&)> getDiagonalFncLst(void (*func)(int&, int&))
 
 void addKnightMovements(std::vector<MoveType>& movements, const ChessGameState& source, unsigned col, unsigned row)
 {
-    auto player = source.state[col][row].owner;
+    auto player = source.matrix[col][row].owner;
 
     for (auto& firstDelta : {down, up, left, right})
     {
@@ -92,30 +92,31 @@ void addKnightMovements(std::vector<MoveType>& movements, const ChessGameState& 
             if (!inBounds(c2, r2))
                 continue;
 
-            if (source.state[c2][r2].owner == player)
+            if (source.matrix[c2][r2].owner == player)
+                continue;
 
-            movements.push_back(MoveType{col, row, static_cast<unsigned>(c), static_cast<unsigned>(r)});
+            movements.push_back(MoveType{col, row, static_cast<unsigned>(c2), static_cast<unsigned>(r2)});
         }
     }
 }
 
 void addPawnMovements(std::vector<MoveType>& movements, const ChessGameState& source, unsigned col, unsigned row)
 {
-    int delta = source.state[col][row].owner == Ownership::White ? 1 : -1;
+    int delta = source.matrix[col][row].owner == Ownership::White ? 1 : -1;
 
-    if (inBounds(col, row + delta) && source.state[col][row + delta].owner == Ownership::None)
+    if (inBounds(col, row + delta) && source.matrix[col][row + delta].owner == Ownership::None)
         movements.push_back(MoveType{col, row, col, row + delta});
 
-    if (inBounds(col + 1, row + delta) && source.state[col + 1][row + delta].owner != Ownership::None)
+    if (inBounds(col + 1, row + delta) && source.matrix[col + 1][row + delta].owner != Ownership::None)
         movements.push_back(MoveType{col, row, col + 1, row + delta});
 
-    if (inBounds(col - 1, row + delta) && source.state[col - 1][row + delta].owner != Ownership::None)
+    if (inBounds(col - 1, row + delta) && source.matrix[col - 1][row + delta].owner != Ownership::None)
         movements.push_back(MoveType{col, row, col - 1, row + delta});
 }
 
 void addKingMovements(std::vector<MoveType>& movements, const ChessGameState& source, unsigned col, unsigned row)
 {
-    auto player = source.state[col][row].owner;
+    auto player = source.matrix[col][row].owner;
 
     for (int c_delta = -1; c_delta <= 1; ++c_delta)
     {
@@ -127,7 +128,7 @@ void addKingMovements(std::vector<MoveType>& movements, const ChessGameState& so
             if (!inBounds(col + c_delta, row + r_delta))
                 continue;
 
-            if (source.state[col + c_delta][row + r_delta].owner == player)
+            if (source.matrix[col + c_delta][row + r_delta].owner == player)
                 continue;
 
             movements.push_back(MoveType{col, row, col + c_delta, row + r_delta});
@@ -142,13 +143,13 @@ std::vector<MoveType> getPossibleMovesForPiece(
 {
     std::vector<MoveType> result;
 
-    switch(source.state[col][row].piece)
+    switch(source.matrix[col][row].piece)
     {
     case PieceType::Pawn:
         addPawnMovements(result, source, col, row);
         break;
     case PieceType::Rook:
-        addDiagonalMovements(result, source, col, row);
+        addLineMovements(result, source, col, row);
         break;
     case PieceType::Knight:
         addKnightMovements(result, source, col, row);
@@ -199,13 +200,13 @@ int evalGameState(const ChessGameState& source, Ownership player)
     {
         for (int row = 0; row < 8; ++row)
         {
-            if (source.state[col][row].owner == Ownership::None)
+            if (source.matrix[col][row].owner == Ownership::None)
                 continue;
 
-            if (source.state[col][row].owner == player)
-                value += getPieceValue(source.state[col][row].piece);
+            if (source.matrix[col][row].owner == player)
+                value += getPieceValue(source.matrix[col][row].piece);
             else
-                value -= getPieceValue(source.state[col][row].piece);
+                value -= getPieceValue(source.matrix[col][row].piece);
         }
     }
 
@@ -223,10 +224,7 @@ void ChessBasicBrancher::branch(
     {
         for (int row = 0; row < 8; ++row)
         {
-            if (source.state[col][row].owner == Ownership::None)
-                continue;
-
-            if (source.state[col][row].owner == firstBranch_)
+            if (source.matrix[col][row].owner == firstBranch_)
             {
                 for (auto move : getPossibleMovesForPiece(source, col, row))
                 {
@@ -254,10 +252,7 @@ void ChessBasicBrancher::subBranch_(
     {
         for (int row = 0; row < 8; ++row)
         {
-            if (source.state[col][row].owner == Ownership::None)
-                continue;
-
-            if (source.state[col][row].owner == enemy)
+            if (source.matrix[col][row].owner == enemy)
             {
                 for (auto move : getPossibleMovesForPiece(source, col, row))
                 {
@@ -265,9 +260,7 @@ void ChessBasicBrancher::subBranch_(
                     newSource.apply(move);
 
                     auto vert = valueGraph.addVertex(evalGameState(source, firstBranch_));
-                    valueGraph.addEdge(0, vert, move);
-
-                    subBranch_(vert, newSource, valueGraph);
+                    valueGraph.addEdge(srcVert, vert, move);
                 }
             }
         }

@@ -40,7 +40,8 @@ public:
         if (bestVal == std::numeric_limits<int>::min())
             throw std::runtime_error("MinMax::getOptimalMove(): move not found?");
 
-        std::cout << "MinMax::getOptimalMove(): move of value: " << bestVal << "; move: " << bestMove << std::endl;
+        //std::cout << "MinMax::getOptimalMove(): move of value: " << bestVal << "; move: " << *bestMove << std::endl;
+        return *bestMove;
     }
 
 protected:    
