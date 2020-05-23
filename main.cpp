@@ -4,7 +4,7 @@
 #include <QFrame>
 #include "widgets/ChessSFMLWidget.hpp"
 
-#include "ChessBasicBrancher.hpp"
+#include "ChessGame/ChessBasicBrancher.hpp"
 #include "MinMax.hpp"
 
 #include "Observer/Observer.hpp"

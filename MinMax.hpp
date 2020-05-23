@@ -8,7 +8,7 @@
 #include <optional>
 #include <iostream>
 
-#include <IBrancher.hpp>
+#include <ChessGame/IBrancher.hpp>
 #include <GraphList.hpp>
 
 template<typename GameState>

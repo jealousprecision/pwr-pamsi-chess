@@ -1,8 +1,8 @@
 #include "QSFMLWidget.hpp"
 
 #include <map>
-#include <ChessGame.hpp>
-#include <GameState.hpp>
+#include <ChessGame/ChessGame.hpp>
+#include <ChessGame/GameState.hpp>
 
 class ChessSFMLWidget : public QSFMLCanvas
 {

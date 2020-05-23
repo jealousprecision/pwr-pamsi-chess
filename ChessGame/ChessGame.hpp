@@ -12,12 +12,16 @@ class ChessGame;
 namespace chessgamestates
 {
 
+class ChessGameStateMachine
+{
+public:
+    void parseMove(Player& player, ChessGameState::MoveType type);
+};
+
 class ChessGameAbstractState
 {
 public:
-    ChessGameAbstractState(ChessGame& parent) :
-        parent_(parent)
-    {}
+    ChessGameAbstractState(ChessGame& parent);
     virtual ~ChessGameAbstractState() = default;
 
     virtual void onInit() {}
@@ -40,8 +44,21 @@ class ChessGameDefaultState : ChessGameAbstractState
 
 }  // namespace chessgamestates
 
+class ChessGameEvent : SubjectEvent
+{
+public:
+    bool gameEnded = false;
+    bool yourTurn = false;
+};
+
 class ChessGame : public AbstractSubject
 {
+    struct Event
+    {
+        bool playerMoveEvent;
+
+    };
+
 public:
     ChessGame(Ownership playerColor = Ownership::Black) :
         ai(std::make_unique<ChessBasicBrancher>(negate(playerColor)))
