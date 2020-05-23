@@ -1,7 +1,7 @@
 #include "ChessHelpers.hpp"
 
 #include <vector>
-#include <ChessGame/GameState.hpp>
+#include <ChessGame/ChessGameState.hpp>
 
 namespace
 {
@@ -173,52 +173,24 @@ std::vector<ChessGameState::MoveType> getPossibleMovesForPiece(
     return result;
 }
 
-int getPieceValue(PieceType piece)
-{
-    switch(piece)
-    {
-    case PieceType::Pawn:
-        return 1;
-    case PieceType::Rook:
-        return 5;
-    case PieceType::Knight:
-        return 5;
-    case PieceType::Bishop:
-        return 5;
-    case PieceType::Queen:
-        return 20;
-    case PieceType::King:
-        return 100;
-    default:
-        throw std::runtime_error("getPossibleMovesForPiece(): bad enum value");
-    }
-}
-
-int evalGameState(const ChessGameState& source, Ownership player)
-{
-    int value = 0;
-
-    for (int col = 0; col < 8; ++col)
-    {
-        for (int row = 0; row < 8; ++row)
-        {
-            if (source.matrix[col][row].owner == Ownership::None)
-                continue;
-
-            if (source.matrix[col][row].owner == player)
-                value += getPieceValue(source.matrix[col][row].piece);
-            else
-                value -= getPieceValue(source.matrix[col][row].piece);
-        }
-    }
-
-    return value;
-}
-
 std::vector<ChessGameState::MoveType> getAllPossibleMovesForPlayer(
         const ChessGameState& source,
         PlayerColor player)
 {
     std::vector<ChessGameState::MoveType> result;
-    return {};
+    auto playerOwnerhip = toOwnership(player);
+
+    for (unsigned col = 0; col < source.matrix.size(); ++col)
+    {
+        for (unsigned row = 0; row < source.matrix.size(); ++col)
+        {
+            if (source.matrix[col][row].owner == playerOwnerhip)
+            {
+                auto movesForPiece = getPossibleMovesForPiece(source, col, row);
+                std::move(movesForPiece.begin(), movesForPiece.end(), std::back_inserter(result));
+            }
+        }
+    }
+
+    return result;
 }

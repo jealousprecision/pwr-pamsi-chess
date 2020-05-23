@@ -4,6 +4,53 @@
 #include <functional>
 #include <ChessGame/ChessHelpers.hpp>
 
+namespace
+{
+
+int getPieceValue(PieceType piece)
+{
+    switch(piece)
+    {
+    case PieceType::Pawn:
+        return 1;
+    case PieceType::Rook:
+        return 5;
+    case PieceType::Knight:
+        return 5;
+    case PieceType::Bishop:
+        return 5;
+    case PieceType::Queen:
+        return 20;
+    case PieceType::King:
+        return 100;
+    default:
+        throw std::runtime_error("getPossibleMovesForPiece(): bad enum value");
+    }
+}
+
+int evalGameState(const ChessGameState& source, Ownership player)
+{
+    int value = 0;
+
+    for (int col = 0; col < 8; ++col)
+    {
+        for (int row = 0; row < 8; ++row)
+        {
+            if (source.matrix[col][row].owner == Ownership::None)
+                continue;
+
+            if (source.matrix[col][row].owner == player)
+                value += getPieceValue(source.matrix[col][row].piece);
+            else
+                value -= getPieceValue(source.matrix[col][row].piece);
+        }
+    }
+
+    return value;
+}
+
+}  // namespace
+
 void ChessBasicBrancher::branch(
         const ChessGameState &source,
         GraphList<int, typename ChessGameState::MoveType> &valueGraph)

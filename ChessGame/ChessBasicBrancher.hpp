@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IBrancher.hpp"
-#include "GameState.hpp"
+#include <ChessGame/IBrancher.hpp>
+#include <ChessGame/ChessGameState.hpp>
 
 #include <stdexcept>
 

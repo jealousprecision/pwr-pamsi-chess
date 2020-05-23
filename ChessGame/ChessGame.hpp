@@ -1,83 +1,34 @@
 #pragma once
 
 #include <memory>
-#include "GameState.hpp"
-#include "MinMax.hpp"
-#include "ChessBasicBrancher.hpp"
+#include <optional>
+#include <ChessGame/Player.hpp>
+#include <ChessGame/ChessGameState.hpp>
+#include <ChessGame/States/ChessGameStateMachine.hpp>
 
-#include "Observer/Subject.hpp"
-
-class ChessGame;
-
-namespace chessgamestates
+class ChessGame
 {
-
-class ChessGameStateMachine
-{
-public:
-    void parseMove(Player& player, ChessGameState::MoveType type);
-};
-
-class ChessGameAbstractState
-{
-public:
-    ChessGameAbstractState(ChessGame& parent);
-    virtual ~ChessGameAbstractState() = default;
-
-    virtual void onInit() {}
-    virtual void onExit() {}
-
-    virtual void playerMoveSlot(ChessGameState::MoveType move) = 0;
-
-protected:
-    ChessGame& parent_;
-};
-
-class ChessGameDefaultState : ChessGameAbstractState
-{
-    ChessGameDefaultState(ChessGame& parent) :
-        ChessGameAbstractState(parent)
-    {}
-
-    virtual void playerMoveSlot(ChessGameState::MoveType move) override;
-};
-
-}  // namespace chessgamestates
-
-class ChessGameEvent : SubjectEvent
-{
-public:
-    bool gameEnded = false;
-    bool yourTurn = false;
-};
-
-class ChessGame : public AbstractSubject
-{
-    struct Event
+    struct MoveEvent
     {
-        bool playerMoveEvent;
-
+        Player& player;
+        ChessGameState::MoveType moveType;
     };
 
 public:
-    ChessGame(Ownership playerColor = Ownership::Black) :
-        ai(std::make_unique<ChessBasicBrancher>(negate(playerColor)))
-    {
+    ChessGame();
 
-    }
+    void registerPlayer(Player& player);
+    void playerMoveSlot(Player& player, ChessGameState::MoveType move);
+    void start();
 
-    void playerMoveSlot(ChessGameState::MoveType move)
-    {
-        state.apply(move);
+    void update();
 
-        auto aiMove = ai.getOptimalMove(state);
-        state.apply(aiMove);
-    }
+    Player* whitePlayer = nullptr;
+    Player* blackPlayer = nullptr;
+    PlayerColor currentPlayerColor = PlayerColor::White;
+    ChessGameState gameState;
+    std::optional<MoveEvent> moveEvent;
+    ChessGameStateMachine stateMachine;
 
-    const ChessGameState& getState() const { return state; }
-
-protected:
-    Ownership player = Ownership::White;
-    ChessGameState state;
-    MinMax<ChessGameState> ai;
+    bool hasStarted = false;
 };

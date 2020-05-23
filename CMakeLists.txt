@@ -15,34 +15,27 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # add sfml
 set(SFML_DIR "~/lib/SFML-2.5.1/lib/cmake/SFML")
 find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
+
+set(Qt5_DIR "/home/adam/Qt/5.12.8/gcc_64/lib/cmake/Qt5/")
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 
 add_executable(pwr-pamsi-chess
     main.cpp
-    GraphList.hpp
-    VoidType.hpp
-    MinMax.cpp
-    MinMax.hpp
-    ChessGame/GameState.hpp
-    ChessGame/GameState.cpp
-    ChessGame/IBrancher.hpp
-    ChessGame/ChessBasicBrancher.hpp
+    #MinMax.cpp
+    ChessGame/ChessGameState.cpp
     ChessGame/ChessBasicBrancher.cpp
-    ChessGame/ChessGame.hpp
     ChessGame/ChessGame.cpp
-    ChessGame/ChessHelpers.hpp
     ChessGame/ChessHelpers.cpp
-    ChessGame/Player.hpp
     ChessGame/Player.cpp
-    ChessGame/PlayerAi.hpp
-    ChessGame/PlayerAi.cpp
+    ChessGame/Enums.cpp
+    ChessGame/States/ChessGameStateMachine.cpp
+    ChessGame/States/ChessGameDefaultState.cpp
+    ChessGame/States/ChessGameCheckState.cpp
+    ChessGame/States/ChessGameEndState.cpp
+    #ChessGame/PlayerAi.cpp
     widgets/QSFMLWidget.cpp
-    widgets/QSFMLWidget.hpp
     widgets/ChessSFMLWidget.cpp
-    widgets/ChessSFMLWidget.hpp
-    Observer/Observer.hpp
-    Observer/Subject.hpp
 )
 
 

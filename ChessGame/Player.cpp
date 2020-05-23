@@ -1,5 +1,10 @@
 #include "Player.hpp"
 
-Player::Player(ChessGame& game) :
-    game_(game)
+Player::Player(ChessGame& game, PlayerColor color) :
+    game_(game), color_(color)
 {}
+
+PlayerColor Player::getPlayerColor()
+{
+    return color_;
+}

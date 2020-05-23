@@ -1,19 +1,28 @@
 #include "ChessSFMLWidget.hpp"
 
 #include <iostream>
+#include <stdexcept>
+
 #include <QMouseEvent>
 
-ChessSFMLWidget::ChessSFMLWidget(QWidget* parent, const QPoint& pos, const QSize& size, ChessGame& game) :
-    QSFMLCanvas(parent, pos, size, 1),
-    game_(game)
+#include <ChessGame/ChessGame.hpp>
+
+ChessSFMLWidget::ChessSFMLWidget(
+    QWidget* parent,
+    const QPoint& pos,
+    const QSize& size,
+    ChessGame& game,
+    PlayerColor color) :
+        QSFMLCanvas(parent, pos, size, 1),
+        Player(game, color)
 {}
 
 void ChessSFMLWidget::OnInit()
 {
-    boardTxt.loadFromFile("./board_new360.png");
+    boardTxt.loadFromFile("./graphics/board_new360.png");
     boardSpr.setTexture(boardTxt);
 
-    piecesTxt.loadFromFile("./pieces.png");
+    piecesTxt.loadFromFile("./graphics/pieces.png");
 
     constexpr auto pieceSize = 6u;
     PieceType pieces[pieceSize]{PieceType::King, PieceType::Queen, PieceType::Bishop, PieceType::Knight, PieceType::Rook, PieceType::Pawn};
@@ -33,10 +42,12 @@ void ChessSFMLWidget::OnInit()
 
 void ChessSFMLWidget::OnUpdate()
 {
+    game_.update();  // <-- turbo-omega hack, make it better
+
     clear(sf::Color(255, 255, 255));
     draw(boardSpr);
 
-    auto& state = game_.getState().matrix;
+    auto& state = game_.gameState.matrix;
 
     constexpr auto REC_SIDE = 45u;
     for (unsigned col = 0; col < state.size(); ++col)
@@ -70,7 +81,15 @@ void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
     unsigned col = event->x() / REC_SIDE;
     unsigned row = event->y() / REC_SIDE;
 
-    game_.playerMoveSlot(ChessGameState::MoveType{col, row, col, row - 1});
+    //game_.playerMoveSlot(ChessGameState::MoveType{col, row, col, row - 1});
 }
 
+void ChessSFMLWidget::yourTurnSlot()
+{
+    throw std::runtime_error("ChessSFMLWidget::yourTurnSlot(): not implemented");
+}
 
+void ChessSFMLWidget::gameEndedSlot(bool won)
+{
+    throw std::runtime_error("ChessSFMLWidget::gameEndedSlot(): not implemented");
+}

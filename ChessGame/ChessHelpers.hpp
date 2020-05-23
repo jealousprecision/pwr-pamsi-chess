@@ -1,12 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <ChessGame/GameState.hpp>
-#include <ChessGame/Player.hpp>
-
-int evalGameState(const ChessGameState& source, Ownership player);
-
-int getPieceValue(PieceType piece);
+#include <ChessGame/ChessGameState.hpp>
+#include <ChessGame/Enums.hpp>
 
 std::vector<ChessGameState::MoveType> getPossibleMovesForPiece(
         const ChessGameState& source,

@@ -1,13 +1,24 @@
-#include "QSFMLWidget.hpp"
+#pragma once
 
 #include <map>
-#include <ChessGame/ChessGame.hpp>
-#include <ChessGame/GameState.hpp>
 
-class ChessSFMLWidget : public QSFMLCanvas
+#include <widgets/QSFMLWidget.hpp>
+#include <ChessGame/Player.hpp>
+
+class ChessGame;
+
+class ChessSFMLWidget : public QSFMLCanvas, public Player
 {
 public:
-    ChessSFMLWidget(QWidget* parent, const QPoint& pos, const QSize& size, ChessGame& game);
+    ChessSFMLWidget(
+        QWidget* parent,
+        const QPoint& pos,
+        const QSize& size,
+        ChessGame& game,
+        PlayerColor color);
+
+    void yourTurnSlot() override;
+    void gameEndedSlot(bool won) override;
 
 protected:
     void OnInit() override;
@@ -20,6 +31,4 @@ protected:
     sf::Texture piecesTxt;
     std::map<PieceType, sf::Sprite> pieceWhiteToSpriteMap;
     std::map<PieceType, sf::Sprite> pieceBlackToSpriteMap;
-
-    ChessGame& game_;
 };

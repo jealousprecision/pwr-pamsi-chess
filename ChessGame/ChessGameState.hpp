@@ -3,25 +3,7 @@
 #include <ostream>
 #include <vector>
 
-enum class PieceType
-{
-    Unused,
-    King,
-    Queen,
-    Rook,  // tower
-    Bishop,
-    Knight, // horse
-    Pawn
-};
-
-enum class Ownership
-{
-    None, // When field is empty
-    White,
-    Black
-};
-
-Ownership negate(Ownership);
+#include <ChessGame/Enums.hpp>
 
 struct Field
 {
@@ -51,4 +33,3 @@ struct ChessGameState
 };
 
 std::ostream& operator<<(std::ostream& os, const ChessGameState::MoveType& obj);
-
