@@ -12,3 +12,11 @@ std::vector<ChessGameState::MoveType> getPossibleMovesForPiece(
 std::vector<ChessGameState::MoveType> getAllPossibleMovesForPlayer(
         const ChessGameState& source,
         PlayerColor player);
+
+Ownership getOwnershipOfFieldFrom(
+        const ChessGameState& source,
+        ChessGameState::MoveType move);
+
+bool isPlayerInCheck(
+        const ChessGameState& source,
+        PlayerColor player);

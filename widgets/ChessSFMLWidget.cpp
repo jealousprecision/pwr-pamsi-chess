@@ -6,6 +6,17 @@
 #include <QMouseEvent>
 
 #include <ChessGame/ChessGame.hpp>
+#include <ChessGame/ChessHelpers.hpp>
+
+namespace
+{
+
+bool inBounds(unsigned col, unsigned row)
+{
+    return col < 8 && row < 8;
+}
+
+}  // namespace
 
 ChessSFMLWidget::ChessSFMLWidget(
     QWidget* parent,
@@ -19,31 +30,34 @@ ChessSFMLWidget::ChessSFMLWidget(
 
 void ChessSFMLWidget::OnInit()
 {
-    boardTxt.loadFromFile("./graphics/board_new360.png");
-    boardSpr.setTexture(boardTxt);
-
-    piecesTxt.loadFromFile("./graphics/pieces.png");
+    spritesheet.loadFromFile("./graphics/spritesheet.png");
+    sf::Rect<int> mainBoard(0, 0, 360, 360);
+    boardSpr.setTexture(spritesheet);
+    boardSpr.setTextureRect(mainBoard);
 
     constexpr auto pieceSize = 6u;
     PieceType pieces[pieceSize]{PieceType::King, PieceType::Queen, PieceType::Bishop, PieceType::Knight, PieceType::Rook, PieceType::Pawn};
 
     for (unsigned i = 0; i < pieceSize; ++i)
     {
-        sf::Rect<int> rect(i * 45, 0, 45, 45);
-        pieceWhiteToSpriteMap[pieces[i]] = sf::Sprite(piecesTxt, rect);
+        sf::Rect<int> rect(i * 45, 360, 45, 45);
+        pieceWhiteToSpriteMap[pieces[i]] = sf::Sprite(spritesheet, rect);
     }
 
     for (unsigned i = 0; i < pieceSize; ++i)
     {
-        sf::Rect<int> rect(i * 45, 45, 45, 45);
-        pieceBlackToSpriteMap[pieces[i]] = sf::Sprite(piecesTxt, rect);
+        sf::Rect<int> rect(i * 45, 45 + 360, 45, 45);
+        pieceBlackToSpriteMap[pieces[i]] = sf::Sprite(spritesheet, rect);
     }
+
+    //markedTxt.loadFromFile("./graphics/marked.png");
+    markedSpr.setTexture(spritesheet);
+    sf::Rect<int> markedRect(0, 360 + 2 * 45, 45, 45);
+    markedSpr.setTextureRect(markedRect);
 }
 
 void ChessSFMLWidget::OnUpdate()
 {
-    game_.update();  // <-- turbo-omega hack, make it better
-
     clear(sf::Color(255, 255, 255));
     draw(boardSpr);
 
@@ -68,25 +82,62 @@ void ChessSFMLWidget::OnUpdate()
             }
         }
     }
+
+    for (auto move : moves)
+    {
+        auto col = move.colTo, row = move.rowTo;
+        sf::Transform transform;
+        transform.translate(col * REC_SIDE, row * REC_SIDE);
+        sf::RenderStates renderState(transform);
+
+        draw(markedSpr, renderState);
+    }
 }
 
 void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
 {
     constexpr auto REC_SIDE = 45;
-    std::cout << "mouse pressed" << std::endl;
 
-    if (event->button() != Qt::MouseButton::LeftButton)
-        return;
+    if (event->button() == Qt::MouseButton::LeftButton && myTurn)
+    {
+        std::cout << "mouse pressed" << std::endl;
 
-    unsigned col = event->x() / REC_SIDE;
-    unsigned row = event->y() / REC_SIDE;
+        unsigned col = event->x() / REC_SIDE;
+        unsigned row = event->y() / REC_SIDE;
 
-    //game_.playerMoveSlot(ChessGameState::MoveType{col, row, col, row - 1});
+        if (!moves.empty())
+        {
+            auto found = std::find_if(moves.begin(), moves.end(),
+                [&](const auto& move)
+                {
+                    return move.colTo == col && move.rowTo == row;
+                });
+
+            if (found != moves.end())
+            {
+                game_.playerMoveSlot(*this, *found);
+                myTurn = false;
+                moves.clear();
+                return;
+            }
+        }
+
+        if (inBounds(col, row) && game_.gameState.matrix[col][row].owner == toOwnership(color_))
+        {
+            moves = getPossibleMovesForPiece(game_.gameState, col, row);
+        }
+        else
+        {
+            moves.clear();
+        }
+    }
 }
 
 void ChessSFMLWidget::yourTurnSlot()
 {
-    throw std::runtime_error("ChessSFMLWidget::yourTurnSlot(): not implemented");
+    std::cout << "ChessSFMLWidget::yourTurnSlot()" << std::endl;
+
+    myTurn = true;
 }
 
 void ChessSFMLWidget::gameEndedSlot(bool won)

@@ -36,3 +36,8 @@ void ChessGameStateMachine::update()
 {
     currentState->update();
 }
+
+const IChessGameState& ChessGameStateMachine::getCurrentState() const
+{
+    return *currentState;
+}

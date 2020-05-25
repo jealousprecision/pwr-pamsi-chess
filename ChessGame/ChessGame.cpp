@@ -22,6 +22,16 @@ void ChessGame::playerMoveSlot(Player& player, ChessGameState::MoveType move)
     moveEvent.emplace(MoveEvent{player, move});
 }
 
+Player& ChessGame::getPlayer(PlayerColor color)
+{
+    return color == PlayerColor::White ? *whitePlayer : *blackPlayer;
+}
+
+Player& ChessGame::getCurrentPlayer()
+{
+    return getPlayer(currentPlayerColor);
+}
+
 void ChessGame::start()
 {
     if (!whitePlayer && !blackPlayer)

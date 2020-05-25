@@ -1,5 +1,7 @@
 #include "ChessGameState.hpp"
 
+#include <tuple>
+
 namespace
 {
 
@@ -39,8 +41,8 @@ ChessGameState::ChessGameState() :
 std::ostream& operator<<(std::ostream& os, const ChessGameState::MoveType& obj)
 {
     constexpr char dictionary[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
-    return os << dictionary[obj.colFrom] << obj.rowFrom << " => "
-        << dictionary[obj.colTo] << obj.rowTo;
+    return os << dictionary[obj.colFrom] << obj.rowFrom + 1 << " => "
+        << dictionary[obj.colTo] << obj.rowTo + 1;
 }
 
 Ownership negate(Ownership original)
@@ -54,4 +56,10 @@ Ownership negate(Ownership original)
     default:
         throw std::runtime_error("negate(): Ownership vlaue not found");
     }
+}
+
+bool operator==(ChessGameState::MoveType lhs, ChessGameState::MoveType rhs)
+{
+    return std::tie(lhs.colFrom, lhs.rowFrom, lhs.colTo, lhs.rowTo)
+        == std::tie(rhs.colFrom, rhs.rowFrom, rhs.colTo, rhs.rowTo);
 }

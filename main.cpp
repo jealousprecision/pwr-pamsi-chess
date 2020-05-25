@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include <ctime>
 #include <memory>
 
 #include <QApplication>
@@ -10,6 +12,7 @@
 
 int main(int argc, char *argv[])
 {
+    std::srand(std::time(nullptr));
     QApplication a(argc, argv);
 
     QFrame* mainFrame = new QFrame;
@@ -19,15 +22,26 @@ int main(int argc, char *argv[])
 
     ChessGame game;
 
-    ChessSFMLWidget chessWidget(mainFrame, QPoint(20, 20), QSize(360, 360), game, PlayerColor::White);
+    ChessSFMLWidget chessWidget(mainFrame, QPoint(20, 20), QSize(360, 360), game, PlayerColor::Black);
     chessWidget.show();
 
+    DummyPlayer white(game, PlayerColor::White);
     DummyPlayer black(game, PlayerColor::Black);
 
+    QTimer timer;
+    timer.callOnTimeout(
+        [&]()
+        {
+            white.update();
+            black.update();
+            game.update();
+        });
+
+    game.registerPlayer(white);
     game.registerPlayer(chessWidget);
-    game.registerPlayer(black);
 
     game.start();
+    timer.start();
 
     return a.exec();
 }

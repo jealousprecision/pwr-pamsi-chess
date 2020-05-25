@@ -1,6 +1,7 @@
 #include "ChessHelpers.hpp"
 
 #include <vector>
+#include <tuple>
 #include <ChessGame/ChessGameState.hpp>
 
 namespace
@@ -103,15 +104,21 @@ void addKnightMovements(std::vector<MoveType>& movements, const ChessGameState& 
 void addPawnMovements(std::vector<MoveType>& movements, const ChessGameState& source, unsigned col, unsigned row)
 {
     int delta = source.matrix[col][row].owner == Ownership::White ? 1 : -1;
+    auto enemy = source.matrix[col][row].owner == Ownership::White ? Ownership::Black : Ownership::White;
 
     if (inBounds(col, row + delta) && source.matrix[col][row + delta].owner == Ownership::None)
         movements.push_back(MoveType{col, row, col, row + delta});
 
-    if (inBounds(col + 1, row + delta) && source.matrix[col + 1][row + delta].owner != Ownership::None)
+    if (inBounds(col + 1, row + delta) && source.matrix[col + 1][row + delta].owner == enemy)
         movements.push_back(MoveType{col, row, col + 1, row + delta});
 
-    if (inBounds(col - 1, row + delta) && source.matrix[col - 1][row + delta].owner != Ownership::None)
+    if (inBounds(col - 1, row + delta) && source.matrix[col - 1][row + delta].owner == enemy)
         movements.push_back(MoveType{col, row, col - 1, row + delta});
+
+    if (enemy == Ownership::Black && row == 1)
+        movements.push_back(MoveType{col, row, col, row + 2 * delta});
+    else if (enemy == Ownership::White && row == 6)
+        movements.push_back(MoveType{col, row, col, row + 2 * delta});
 }
 
 void addKingMovements(std::vector<MoveType>& movements, const ChessGameState& source, unsigned col, unsigned row)
@@ -134,6 +141,20 @@ void addKingMovements(std::vector<MoveType>& movements, const ChessGameState& so
             movements.push_back(MoveType{col, row, col + c_delta, row + r_delta});
         }
     }
+}
+
+// col, row
+std::tuple<unsigned, unsigned> getKing(const ChessGameState& source, PlayerColor kingColor)
+{
+    constexpr auto ChessSize = 8u;
+
+    for (unsigned col = 0; col < ChessSize; ++col)
+        for (unsigned row = 0; row < ChessSize; ++row)
+            if (source.matrix[col][row].owner == toOwnership(kingColor)
+                && source.matrix[col][row].piece == PieceType::King)
+                return {col, row};
+
+    throw std::runtime_error("getKing(): king not found!");
 }
 
 }  // namespace
@@ -182,7 +203,7 @@ std::vector<ChessGameState::MoveType> getAllPossibleMovesForPlayer(
 
     for (unsigned col = 0; col < source.matrix.size(); ++col)
     {
-        for (unsigned row = 0; row < source.matrix.size(); ++col)
+        for (unsigned row = 0; row < source.matrix.size(); ++row)
         {
             if (source.matrix[col][row].owner == playerOwnerhip)
             {
@@ -193,4 +214,25 @@ std::vector<ChessGameState::MoveType> getAllPossibleMovesForPlayer(
     }
 
     return result;
+}
+
+Ownership getOwnershipOfFieldFrom(
+        const ChessGameState& source,
+        ChessGameState::MoveType move)
+{
+    return source.matrix[move.colFrom][move.rowFrom].owner;
+}
+
+bool isPlayerInCheck(
+    const ChessGameState& source,
+    PlayerColor player)
+{
+    auto [kingCol, kingRow] = getKing(source, player);
+
+    auto moves = getAllPossibleMovesForPlayer(source, negate(player));
+    for (auto move : moves)
+        if (move.colTo == kingCol && move.rowTo == kingRow)
+            return true;
+
+    return false;
 }

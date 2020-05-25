@@ -19,6 +19,7 @@ public:
 
     void changeState(State state);
     void update();
+    const IChessGameState& getCurrentState() const;
 
 protected:
     std::unique_ptr<IChessGameState> defaultState_;

@@ -12,7 +12,7 @@ public:
 
     virtual void yourTurnSlot() = 0;
     virtual void gameEndedSlot(bool won) = 0;
-    PlayerColor getPlayerColor();
+    PlayerColor getPlayerColor() const;
 
 protected:
     ChessGame& game_;

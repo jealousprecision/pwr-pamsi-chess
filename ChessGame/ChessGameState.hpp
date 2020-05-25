@@ -33,3 +33,4 @@ struct ChessGameState
 };
 
 std::ostream& operator<<(std::ostream& os, const ChessGameState::MoveType& obj);
+bool operator==(ChessGameState::MoveType lhs, ChessGameState::MoveType rhs);

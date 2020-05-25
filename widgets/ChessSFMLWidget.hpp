@@ -4,6 +4,7 @@
 
 #include <widgets/QSFMLWidget.hpp>
 #include <ChessGame/Player.hpp>
+#include <ChessGame/ChessGameState.hpp>
 
 class ChessGame;
 
@@ -21,14 +22,19 @@ public:
     void gameEndedSlot(bool won) override;
 
 protected:
+    // graphics oriented objects
     void OnInit() override;
     void OnUpdate() override;
     void mousePressEvent(QMouseEvent* event) override;
 
-    sf::Sprite boardSpr;
-    sf::Texture boardTxt;
+    sf::Texture spritesheet;
 
-    sf::Texture piecesTxt;
+    sf::Sprite boardSpr;
     std::map<PieceType, sf::Sprite> pieceWhiteToSpriteMap;
     std::map<PieceType, sf::Sprite> pieceBlackToSpriteMap;
+    sf::Sprite markedSpr;
+
+    // player oriented objects
+    std::vector<ChessGameState::MoveType> moves;
+    bool myTurn = false;
 };

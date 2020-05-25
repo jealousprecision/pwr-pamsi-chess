@@ -4,5 +4,10 @@
 
 void ChessGameEndState::update()
 {
-    throw std::runtime_error("ChessGameEndState::update(): Not Implemented");
+
+}
+
+std::vector<ChessGameState::MoveType> ChessGameEndState::getPossibleMoves() const
+{
+    return {};
 }

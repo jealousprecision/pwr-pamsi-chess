@@ -9,6 +9,10 @@ public:
         Player(game, color)
     {}
 
-    void yourTurnSlot() override  {}
+    void yourTurnSlot() override;
+    void update();
     void gameEndedSlot(bool) override {}
+
+protected:
+    bool yourTurn_ = false;
 };
