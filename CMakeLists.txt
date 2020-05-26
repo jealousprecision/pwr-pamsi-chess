@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SFML_DIR "~/lib/SFML-2.5.1/lib/cmake/SFML")
 find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 
-set(Qt5_DIR "/home/adam/Qt/5.12.8/gcc_64/lib/cmake/Qt5/")
+set(Qt5_DIR "~/Qt/5.12.8/gcc_64/lib/cmake/Qt5/")
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_executable(pwr-pamsi-chess
