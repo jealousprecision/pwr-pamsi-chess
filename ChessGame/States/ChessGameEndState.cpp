@@ -7,7 +7,7 @@ void ChessGameEndState::update()
 
 }
 
-std::vector<ChessGameState::MoveType> ChessGameEndState::getPossibleMoves() const
+const BoardPositionToPossibleMovesMap& ChessGameEndState::getPossibleMoves() const
 {
-    return {};
+    throw std::runtime_error("ChessGameEndState::getPossibleMoves(): no moves for ended game");
 }

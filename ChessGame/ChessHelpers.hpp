@@ -20,3 +20,8 @@ Ownership getOwnershipOfFieldFrom(
 bool isPlayerInCheck(
         const ChessGameState& source,
         PlayerColor player);
+
+void filterOutMovesThatResultInCheck(
+        const ChessGameState& gameState,
+        std::vector<ChessGameState::MoveType>& moves,
+        PlayerColor color);

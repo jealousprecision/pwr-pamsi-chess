@@ -12,7 +12,7 @@ public:
     {}
 
     void update() override;
-    std::vector<ChessGameState::MoveType> getPossibleMoves() const override;
+    const BoardPositionToPossibleMovesMap& getPossibleMoves() const override;
 
 protected:
     ChessGame& game_;

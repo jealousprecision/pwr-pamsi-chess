@@ -20,6 +20,7 @@ public:
 
     void yourTurnSlot() override;
     void gameEndedSlot(bool won) override;
+    PieceType promotionSlot() override;
 
 protected:
     // graphics oriented objects

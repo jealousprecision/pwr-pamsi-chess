@@ -1,5 +1,6 @@
 #include "ChessHelpers.hpp"
 
+#include <algorithm>
 #include <vector>
 #include <tuple>
 #include <ChessGame/ChessGameState.hpp>
@@ -106,19 +107,21 @@ void addPawnMovements(std::vector<MoveType>& movements, const ChessGameState& so
     int delta = source.matrix[col][row].owner == Ownership::White ? 1 : -1;
     auto enemy = source.matrix[col][row].owner == Ownership::White ? Ownership::Black : Ownership::White;
 
-    if (inBounds(col, row + delta) && source.matrix[col][row + delta].owner == Ownership::None)
-        movements.push_back(MoveType{col, row, col, row + delta});
-
     if (inBounds(col + 1, row + delta) && source.matrix[col + 1][row + delta].owner == enemy)
         movements.push_back(MoveType{col, row, col + 1, row + delta});
 
     if (inBounds(col - 1, row + delta) && source.matrix[col - 1][row + delta].owner == enemy)
         movements.push_back(MoveType{col, row, col - 1, row + delta});
 
-    if (enemy == Ownership::Black && row == 1)
-        movements.push_back(MoveType{col, row, col, row + 2 * delta});
-    else if (enemy == Ownership::White && row == 6)
-        movements.push_back(MoveType{col, row, col, row + 2 * delta});
+    if (inBounds(col, row + delta) && source.matrix[col][row + delta].owner == Ownership::None)
+    {
+        movements.push_back(MoveType{col, row, col, row + delta});
+
+        if (enemy == Ownership::Black && row == 1 && source.matrix[col][row + 2 * delta].owner == Ownership::None)
+            movements.push_back(MoveType{col, row, col, row + 2 * delta});
+        else if (enemy == Ownership::White && row == 6 && source.matrix[col][row + 2 * delta].owner == Ownership::None)
+            movements.push_back(MoveType{col, row, col, row + 2 * delta});
+    }
 }
 
 void addKingMovements(std::vector<MoveType>& movements, const ChessGameState& source, unsigned col, unsigned row)
@@ -235,4 +238,21 @@ bool isPlayerInCheck(
             return true;
 
     return false;
+}
+
+void filterOutMovesThatResultInCheck(
+    const ChessGameState& gameState,
+    std::vector<ChessGameState::MoveType>& moves,
+    PlayerColor color)
+{
+    auto it  = std::remove_if(moves.begin(), moves.end(),
+        [&](const auto& move)
+        {
+            auto gameStateCopy = gameState;
+            gameStateCopy.apply(move);
+
+            return isPlayerInCheck(gameStateCopy, color);
+        });
+
+    moves.erase(it, moves.end());
 }

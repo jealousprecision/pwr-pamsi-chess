@@ -12,6 +12,7 @@ public:
 
     virtual void yourTurnSlot() = 0;
     virtual void gameEndedSlot(bool won) = 0;
+    virtual PieceType promotionSlot() = 0;
     PlayerColor getPlayerColor() const;
 
 protected:

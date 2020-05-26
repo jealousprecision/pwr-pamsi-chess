@@ -1,6 +1,7 @@
 #include "ChessGameState.hpp"
 
 #include <tuple>
+#include <sstream>
 
 namespace
 {
@@ -45,6 +46,13 @@ std::ostream& operator<<(std::ostream& os, const ChessGameState::MoveType& obj)
         << dictionary[obj.colTo] << obj.rowTo + 1;
 }
 
+std::string toString(const ChessGameState::MoveType& obj)
+{
+    std::stringstream ssr;
+    ssr << obj;
+    return ssr.str();
+}
+
 Ownership negate(Ownership original)
 {
     switch(original)
@@ -62,4 +70,22 @@ bool operator==(ChessGameState::MoveType lhs, ChessGameState::MoveType rhs)
 {
     return std::tie(lhs.colFrom, lhs.rowFrom, lhs.colTo, lhs.rowTo)
         == std::tie(rhs.colFrom, rhs.rowFrom, rhs.colTo, rhs.rowTo);
+}
+
+BoardPosition getBoardPosition_From(const ChessGameState::MoveType& obj)
+{
+    return BoardPosition{obj.colFrom, obj.rowFrom};
+}
+
+uint16_t BoardPositionHash::operator()(BoardPosition pos) const
+{
+    uint16_t result = static_cast<uint8_t>(pos.col);
+    result <<= 8;
+    result += static_cast<uint8_t>(pos.row);
+    return result;
+}
+
+bool operator==(BoardPosition lhs, BoardPosition rhs)
+{
+    return lhs.col == rhs.col && lhs.row == rhs.row;
 }

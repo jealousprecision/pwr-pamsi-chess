@@ -11,9 +11,14 @@ public:
         game_(game)
     {}
 
+    void onInit() override;
     void update() override;
-    std::vector<ChessGameState::MoveType> getPossibleMoves() const override;
+    void onExit() override;
+    const BoardPositionToPossibleMovesMap& getPossibleMoves() const override;
 
 protected:
+    void initPossibleMoves_();
+
     ChessGame& game_;
+    BoardPositionToPossibleMovesMap possibleMoves_;
 };

@@ -8,5 +8,7 @@ public:
     virtual void onInit() {}
     virtual void update() = 0;
     virtual void onExit() {}
-    virtual std::vector<ChessGameState::MoveType> getPossibleMoves() const = 0;
+    virtual const BoardPositionToPossibleMovesMap& getPossibleMoves() const = 0;
+
+    void checkIfPromotionAvalaibleAndHandleIt();
 };

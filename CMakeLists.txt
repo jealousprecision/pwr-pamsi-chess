@@ -34,6 +34,7 @@ add_executable(pwr-pamsi-chess
     ChessGame/States/ChessGameEndState.cpp
     ChessGame/States/ChessGameDefaultState.cpp
     ChessGame/States/ChessGameCheckState.cpp
+    ChessGame/States/ChessGameStatesHelpers.cpp
     widgets/QSFMLWidget.cpp
     widgets/ChessSFMLWidget.cpp
 )

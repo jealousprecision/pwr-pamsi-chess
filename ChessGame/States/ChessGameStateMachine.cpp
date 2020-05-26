@@ -10,7 +10,9 @@ ChessGameStateMachine::ChessGameStateMachine(ChessGame& game) :
     checkState_(std::make_unique<ChessGameCheckState>(game)),
     endState_(std::make_unique<ChessGameEndState>(game)),
     currentState(defaultState_.get())
-{}
+{
+    currentState->onInit();
+}
 
 void ChessGameStateMachine::changeState(ChessGameStateMachine::State state)
 {

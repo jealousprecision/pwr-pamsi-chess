@@ -5,6 +5,12 @@
 
 #include <ChessGame/ChessGame.hpp>
 #include <ChessGame/ChessHelpers.hpp>
+#include <ChessGame/States/ChessGameStatesHelpers.hpp>
+
+void ChessGameDefaultState::onInit()
+{
+    initPossibleMoves_();
+}
 
 void ChessGameDefaultState::update()
 {
@@ -13,29 +19,51 @@ void ChessGameDefaultState::update()
         auto move = game_.moveEvent.value();
         game_.moveEvent.reset();
 
-        if (move.player.getPlayerColor() != game_.currentPlayerColor)
-            throw std::runtime_error("ChessGameDefaultState::update(): move by not current player!");
+        if (!isMoveEventValid(move, game_))
+            throw std::runtime_error("ChessGameDefaultState::update(): moveEvent not valid: " + toString(move.moveType));
 
-        if (getOwnershipOfFieldFrom(game_.gameState, move.moveType) != toOwnership(game_.currentPlayerColor))
-            throw std::runtime_error("ChessGameDefaultState::update(): move by not current player!");
-
-        auto everyMovePossible = getAllPossibleMovesForPlayer(game_.gameState, game_.currentPlayerColor);
-        auto found = std::find(everyMovePossible.begin(), everyMovePossible.end(), move.moveType);
-
-        if (found == everyMovePossible.end())
-            throw std::runtime_error("ChessGameDefaultState::update(): move not possible!");
+        if (!possibleMoves_.count(getBoardPosition_From(move.moveType)))
+            throw std::runtime_error("ChessGameDefaultState::update(): moveEvent not possible: " + toString(move.moveType));
 
         game_.gameState.apply(move.moveType);
+        if (auto pawnAtEnd = getPawnAtEnd(game_.gameState, game_.currentPlayerColor))
+        {
+            auto piece = game_.getCurrentPlayer().promotionSlot();
+            game_.gameState.matrix[pawnAtEnd->col][pawnAtEnd->row].piece = piece;
+        }
         game_.currentPlayerColor = negate(game_.currentPlayerColor);
 
+        // if next player is in check, change state
         if (isPlayerInCheck(game_.gameState, game_.currentPlayerColor))
+        {
             game_.stateMachine.changeState(ChessGameStateMachine::State::Check);
+        }
+        else
+        {
+            // prepare for next's player moves
+            possibleMoves_.clear();
+            initPossibleMoves_();
+        }
 
         game_.getCurrentPlayer().yourTurnSlot();
     }
 }
 
-std::vector<ChessGameState::MoveType> ChessGameDefaultState::getPossibleMoves() const
+void ChessGameDefaultState::onExit()
 {
-    return getAllPossibleMovesForPlayer(game_.gameState, game_.currentPlayerColor);
+    possibleMoves_.clear();
+}
+
+const BoardPositionToPossibleMovesMap& ChessGameDefaultState::getPossibleMoves() const
+{
+    return possibleMoves_;
+}
+
+void ChessGameDefaultState::initPossibleMoves_()
+{
+    auto allMoves = getAllPossibleMovesForPlayer(game_.gameState, game_.currentPlayerColor);
+    filterOutMovesThatResultInCheck(game_.gameState, allMoves, game_.currentPlayerColor);
+
+    for (auto move : allMoves)
+        possibleMoves_[BoardPosition{move.colFrom, move.rowFrom}].push_back(move);
 }

@@ -10,9 +10,12 @@ public:
     {}
 
     void yourTurnSlot() override;
+    void gameEndedSlot(bool) override;
+    PieceType promotionSlot() override;
     void update();
-    void gameEndedSlot(bool) override {}
+
 
 protected:
     bool yourTurn_ = false;
+    bool isPlaying = true;
 };

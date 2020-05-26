@@ -8,13 +8,13 @@
 
 class ChessGame
 {
+public:
     struct MoveEvent
     {
         Player& player;
         ChessGameState::MoveType moveType;
     };
 
-public:
     ChessGame();
 
     void registerPlayer(Player& player);

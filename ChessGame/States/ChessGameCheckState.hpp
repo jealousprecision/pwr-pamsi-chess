@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ChessGame/States/IChessGameState.hpp>
+#include <ChessGame/ChessGameState.hpp>
 
 class ChessGame;
 
@@ -11,9 +12,14 @@ public:
         game_(game)
     {}
 
+    void onInit() override;
     void update() override;
-    std::vector<ChessGameState::MoveType> getPossibleMoves() const override;
+    void onExit() override;
+    const BoardPositionToPossibleMovesMap& getPossibleMoves() const override;
 
 protected:
+    void initPossibleMovesMap_();
+
     ChessGame& game_;
+    BoardPositionToPossibleMovesMap possibleMovesMap_;
 };

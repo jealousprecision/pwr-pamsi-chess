@@ -4,6 +4,9 @@
 #include <stdexcept>
 
 #include <QMouseEvent>
+#include <QInputDialog>
+#include <QStringList>
+#include <QMessageBox>
 
 #include <ChessGame/ChessGame.hpp>
 #include <ChessGame/ChessHelpers.hpp>
@@ -14,6 +17,23 @@ namespace
 bool inBounds(unsigned col, unsigned row)
 {
     return col < 8 && row < 8;
+}
+
+PieceType translateToPieceType(const QString& string)
+{
+    if (string == "Rook")
+        return PieceType::Rook;
+
+    if (string == "Knight")
+        return PieceType::Knight;
+
+    if (string == "Bishop")
+        return PieceType::Bishop;
+
+    if (string == "Queen")
+        return PieceType::Queen;
+
+    throw std::runtime_error("translateToPieceType(): not valid string");
 }
 
 }  // namespace
@@ -124,7 +144,12 @@ void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
 
         if (inBounds(col, row) && game_.gameState.matrix[col][row].owner == toOwnership(color_))
         {
-            moves = getPossibleMovesForPiece(game_.gameState, col, row);
+            const auto& movesMap = game_.stateMachine.getCurrentState().getPossibleMoves();
+            BoardPosition pos{col, row};
+            if (movesMap.count(pos))
+                moves = movesMap.at(pos);
+            else
+                moves.clear();
         }
         else
         {
@@ -135,12 +160,26 @@ void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
 
 void ChessSFMLWidget::yourTurnSlot()
 {
-    std::cout << "ChessSFMLWidget::yourTurnSlot()" << std::endl;
-
     myTurn = true;
 }
 
 void ChessSFMLWidget::gameEndedSlot(bool won)
 {
-    throw std::runtime_error("ChessSFMLWidget::gameEndedSlot(): not implemented");
+    QMessageBox msg(QMessageBox::Icon::NoIcon, "", won ? "You won!" : "You lose");
+    msg.exec();
+}
+
+PieceType ChessSFMLWidget::promotionSlot()
+{
+    QStringList items;
+    items << "Rook" << "Knight" << "Knight" << "Bishop" << "Queen";
+    bool ok = false;
+    QString result;
+
+    while (!ok)
+    {
+        result = QInputDialog::getItem(this, "Promotion!", "Piece:", items, 0, false, &ok);
+    }
+
+    return translateToPieceType(result);
 }
