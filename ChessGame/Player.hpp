@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Observer/Observer.hpp>
 #include <ChessGame/Enums.hpp>
 
 class ChessGame;
