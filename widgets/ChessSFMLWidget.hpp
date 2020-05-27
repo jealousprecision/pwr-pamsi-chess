@@ -18,9 +18,9 @@ public:
         ChessGame& game,
         PlayerColor color);
 
-    void yourTurnSlot() override;
-    void gameEndedSlot(bool won) override;
-    PieceType promotionSlot() override;
+    void yourTurnCallback() override;
+    void gameEndedCallback(bool won) override;
+    PieceType promotionResponse() override;
 
 protected:
     // graphics oriented objects

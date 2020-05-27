@@ -22,7 +22,7 @@ void ChessGameCheckState::update()
         game_.gameState.apply(move.moveType);
         if (auto pawnAtEnd = getPawnAtEnd(game_.gameState, game_.currentPlayerColor))
         {
-            auto piece = game_.getCurrentPlayer().promotionSlot();
+            auto piece = game_.getCurrentPlayer().promotionResponse();
             game_.gameState.matrix[pawnAtEnd->col][pawnAtEnd->row].piece = piece;
         }
         game_.currentPlayerColor = negate(game_.currentPlayerColor);
@@ -36,7 +36,7 @@ void ChessGameCheckState::update()
         else
         {
             game_.stateMachine.changeState(ChessGameStateMachine::State::Default);
-            game_.getCurrentPlayer().yourTurnSlot();
+            game_.getCurrentPlayer().yourTurnCallback();
         }
     }
 }
@@ -54,8 +54,8 @@ void ChessGameCheckState::onInit()
     {
         // every possible move still results in check
         // notify the players about match result
-        game_.getCurrentPlayer().gameEndedSlot(false);
-        game_.getPlayer(negate(game_.currentPlayerColor)).gameEndedSlot(true);
+        game_.getCurrentPlayer().gameEndedCallback(false);
+        game_.getPlayer(negate(game_.currentPlayerColor)).gameEndedCallback(true);
         game_.stateMachine.changeState(ChessGameStateMachine::State::End);
     }
 }

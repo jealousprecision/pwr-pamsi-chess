@@ -11,9 +11,10 @@ public:
 
     Player(ChessGame& game, PlayerColor color);
 
-    virtual void yourTurnSlot() = 0;
-    virtual void gameEndedSlot(bool won) = 0;
-    virtual PieceType promotionSlot() = 0;
+    virtual void yourTurnCallback() = 0;
+    virtual void gameEndedCallback(bool won) = 0;
+    virtual PieceType promotionResponse() = 0;
+
     PlayerColor getPlayerColor() const;
 
 protected:

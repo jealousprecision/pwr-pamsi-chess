@@ -9,9 +9,9 @@ public:
         Player(game, color)
     {}
 
-    void yourTurnSlot() override;
-    void gameEndedSlot(bool) override;
-    PieceType promotionSlot() override;
+    void yourTurnCallback() override;
+    void gameEndedCallback(bool) override;
+    PieceType promotionResponse() override;
     void update();
 
 

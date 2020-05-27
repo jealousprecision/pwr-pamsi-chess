@@ -18,11 +18,11 @@ public:
     ChessGame();
 
     void registerPlayer(Player& player);
-    void playerMoveSlot(Player& player, ChessGameState::MoveType move);
     Player& getCurrentPlayer();
     Player& getPlayer(PlayerColor color);
     void start();
     void update();
+    void playerMoveCallback(Player& player, ChessGameState::MoveType move);
 
     Player* whitePlayer = nullptr;
     Player* blackPlayer = nullptr;

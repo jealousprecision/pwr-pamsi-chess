@@ -8,9 +8,9 @@ class PlayerAi : public Player
 public:
     PlayerAi(ChessGame& game, PlayerColor color);
 
-    void yourTurnSlot() override;
-    void gameEndedSlot(bool won) override;
-    PieceType promotionSlot() override;
+    void yourTurnCallback() override;
+    void gameEndedCallback(bool won) override;
+    PieceType promotionResponse() override;
     void update();
 
 protected:

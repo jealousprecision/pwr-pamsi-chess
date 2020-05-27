@@ -8,17 +8,17 @@ PlayerAi::PlayerAi(ChessGame& game, PlayerColor color) :
     Player(game, color)
 {}
 
-void PlayerAi::yourTurnSlot()
+void PlayerAi::yourTurnCallback()
 {
     myTurn_ = true;
 }
 
-void PlayerAi::gameEndedSlot(bool)
+void PlayerAi::gameEndedCallback(bool)
 {
     isPlaying_ = false;
 }
 
-PieceType PlayerAi::promotionSlot()
+PieceType PlayerAi::promotionResponse()
 {
     return PieceType::Queen;
 }
@@ -31,7 +31,7 @@ void PlayerAi::update()
     {
         myTurn_ = false;
         auto move = MinMax::getOptimalMove(game_, color_, DIFFICULTY);
-        game_.playerMoveSlot(*this, move);
+        game_.playerMoveCallback(*this, move);
 
         std::cout << "PlayerAi(" << toString(color_) << "): " << move << std::endl;
     }

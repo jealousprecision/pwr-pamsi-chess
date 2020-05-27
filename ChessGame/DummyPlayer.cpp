@@ -31,22 +31,22 @@ void DummyPlayer::update()
 
         std::cout << "DummyPlayer(" << toString(color_) << "): " << move << std::endl;
 
-        game_.playerMoveSlot(*this, move);
+        game_.playerMoveCallback(*this, move);
     }
 }
 
-void DummyPlayer::yourTurnSlot()
+void DummyPlayer::yourTurnCallback()
 {
     yourTurn_ = true;
 }
 
-PieceType DummyPlayer::promotionSlot()
+PieceType DummyPlayer::promotionResponse()
 {
     constexpr PieceType pieces[4]{PieceType::Rook, PieceType::Knight, PieceType::Bishop, PieceType::Queen};
     return pieces[std::rand() % 4];
 }
 
-void DummyPlayer::gameEndedSlot(bool won)
+void DummyPlayer::gameEndedCallback(bool won)
 {
     isPlaying = false;
 }

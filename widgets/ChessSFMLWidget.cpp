@@ -133,7 +133,7 @@ void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
 
             if (found != moves.end())
             {
-                game_.playerMoveSlot(*this, *found);
+                game_.playerMoveCallback(*this, *found);
                 myTurn = false;
                 moves.clear();
                 return;
@@ -156,18 +156,18 @@ void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void ChessSFMLWidget::yourTurnSlot()
+void ChessSFMLWidget::yourTurnCallback()
 {
     myTurn = true;
 }
 
-void ChessSFMLWidget::gameEndedSlot(bool won)
+void ChessSFMLWidget::gameEndedCallback(bool won)
 {
     QMessageBox msg(QMessageBox::Icon::NoIcon, "", won ? "You won!" : "You lose");
     msg.exec();
 }
 
-PieceType ChessSFMLWidget::promotionSlot()
+PieceType ChessSFMLWidget::promotionResponse()
 {
     QStringList items;
     items << "Rook" << "Knight" << "Knight" << "Bishop" << "Queen";

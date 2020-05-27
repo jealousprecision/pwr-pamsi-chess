@@ -28,7 +28,7 @@ void ChessGameDefaultState::update()
         game_.gameState.apply(move.moveType);
         if (auto pawnAtEnd = getPawnAtEnd(game_.gameState, game_.currentPlayerColor))
         {
-            auto piece = game_.getCurrentPlayer().promotionSlot();
+            auto piece = game_.getCurrentPlayer().promotionResponse();
             game_.gameState.matrix[pawnAtEnd->col][pawnAtEnd->row].piece = piece;
         }
         game_.currentPlayerColor = negate(game_.currentPlayerColor);
@@ -45,7 +45,7 @@ void ChessGameDefaultState::update()
             initPossibleMoves_();
         }
 
-        game_.getCurrentPlayer().yourTurnSlot();
+        game_.getCurrentPlayer().yourTurnCallback();
     }
 }
 
