@@ -13,7 +13,7 @@ bool isMoveEventValid(const ChessGame::MoveEvent& moveEvent, const ChessGame& ga
     return true;
 }
 
-std::optional<BoardPosition> getPawnAtEnd(const ChessGameState& gameState, PlayerColor color)
+std::optional<BoardPosition> getPawnAtEnd(const ChessGameData& gameState, PlayerColor color)
 {
     constexpr auto boardSize = 8u;
 

@@ -14,7 +14,7 @@ struct Field
 
 using GameMatrix = std::vector<std::vector<Field>>;
 
-struct ChessGameState
+struct ChessGameData
 {
     struct MoveType
     {
@@ -22,27 +22,23 @@ struct ChessGameState
         unsigned colTo, rowTo;
     };
 
-    ChessGameState();
+    ChessGameData();
 
-    void apply(MoveType move)
-    {
-        matrix[move.colTo][move.rowTo] = matrix[move.colFrom][move.rowFrom];
-        matrix[move.colFrom][move.rowFrom] = Field();
-    }
+    void apply(MoveType move);
 
     GameMatrix matrix;
 };
 
-std::ostream& operator<<(std::ostream& os, const ChessGameState::MoveType& obj);
-std::string toString(const ChessGameState::MoveType& obj);
-bool operator==(ChessGameState::MoveType lhs, ChessGameState::MoveType rhs);
+std::ostream& operator<<(std::ostream& os, const ChessGameData::MoveType& obj);
+std::string toString(const ChessGameData::MoveType& obj);
+bool operator==(ChessGameData::MoveType lhs, ChessGameData::MoveType rhs);
 
 struct BoardPosition
 {
     unsigned col, row;
 };
 
-BoardPosition getBoardPosition_From(const ChessGameState::MoveType& obj);
+BoardPosition getBoardPosition_From(const ChessGameData::MoveType& obj);
 
 struct BoardPositionHash
 {
@@ -52,4 +48,4 @@ struct BoardPositionHash
 bool operator==(BoardPosition lhs, BoardPosition rhs);
 
 using BoardPositionToPossibleMovesMap = std::unordered_map<
-    BoardPosition, std::vector<ChessGameState::MoveType>, BoardPositionHash>;
+    BoardPosition, std::vector<ChessGameData::MoveType>, BoardPositionHash>;

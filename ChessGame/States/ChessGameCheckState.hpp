@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ChessGame/States/IChessGameState.hpp>
-#include <ChessGame/ChessGameState.hpp>
+#include <ChessGame/ChessGameData.hpp>
 
 class ChessGame;
 

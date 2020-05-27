@@ -2,14 +2,14 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <ChessGame/ChessGameState.hpp>
+#include <ChessGame/ChessGameData.hpp>
 #include <ChessGame/ChessGame.hpp>
 #include <ChessGame/ChessHelpers.hpp>
 
 namespace
 {
 
-ChessGameState::MoveType getRandomMove(const BoardPositionToPossibleMovesMap& map)
+ChessGameData::MoveType getRandomMove(const BoardPositionToPossibleMovesMap& map)
 {
     const auto& vec = std::next(map.begin(), std::rand() % map.size())->second;
     return vec[std::rand() % vec.size()];

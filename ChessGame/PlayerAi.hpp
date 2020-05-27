@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ChessGame/Player.hpp>
-#include <ChessGame/ChessGameState.hpp>
+#include <ChessGame/ChessGameData.hpp>
 
 class PlayerAi : public Player
 {

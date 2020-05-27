@@ -3,7 +3,7 @@
 #include <memory>
 #include <optional>
 #include <ChessGame/Player.hpp>
-#include <ChessGame/ChessGameState.hpp>
+#include <ChessGame/ChessGameData.hpp>
 #include <ChessGame/States/ChessGameStateMachine.hpp>
 
 class ChessGame
@@ -12,7 +12,7 @@ public:
     struct MoveEvent
     {
         Player& player;
-        ChessGameState::MoveType moveType;
+        ChessGameData::MoveType moveType;
     };
 
     ChessGame();
@@ -22,12 +22,12 @@ public:
     Player& getPlayer(PlayerColor color);
     void start();
     void update();
-    void playerMoveCallback(Player& player, ChessGameState::MoveType move);
+    void playerMoveCallback(Player& player, ChessGameData::MoveType move);
 
     Player* whitePlayer = nullptr;
     Player* blackPlayer = nullptr;
     PlayerColor currentPlayerColor = PlayerColor::White;
-    ChessGameState gameState;
+    ChessGameData gameState;
     std::optional<MoveEvent> moveEvent;
     ChessGameStateMachine stateMachine;
 

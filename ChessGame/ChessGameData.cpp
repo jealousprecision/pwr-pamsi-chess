@@ -1,4 +1,4 @@
-#include "ChessGameState.hpp"
+#include "ChessGameData.hpp"
 
 #include <tuple>
 #include <sstream>
@@ -6,7 +6,7 @@
 namespace
 {
 
-void initBaseRow(ChessGameState& state, unsigned row, Ownership owner, bool queenFirst = true)
+void initBaseRow(ChessGameData& state, unsigned row, Ownership owner, bool queenFirst = true)
 {
     auto& b = state.matrix;
     b[0][row] = b[7][row] = Field{owner, PieceType::Rook};
@@ -20,7 +20,7 @@ void initBaseRow(ChessGameState& state, unsigned row, Ownership owner, bool quee
     b[kingCol][row] = Field{owner, PieceType::King};
 }
 
-void initSecondRow(ChessGameState& state, unsigned row, Ownership owner)
+void initSecondRow(ChessGameData& state, unsigned row, Ownership owner)
 {
     auto& b = state.matrix;
     for (unsigned col = 0; col < 8; ++col)
@@ -29,7 +29,7 @@ void initSecondRow(ChessGameState& state, unsigned row, Ownership owner)
 
 }  // namespace
 
-ChessGameState::ChessGameState() :
+ChessGameData::ChessGameData() :
     matrix(8, std::vector<Field>(8))
 {
     initBaseRow(*this, 0, Ownership::White);
@@ -39,14 +39,20 @@ ChessGameState::ChessGameState() :
     initSecondRow(*this, 6, Ownership::Black);
 }
 
-std::ostream& operator<<(std::ostream& os, const ChessGameState::MoveType& obj)
+void ChessGameData::apply(ChessGameData::MoveType move)
+{
+    matrix[move.colTo][move.rowTo] = matrix[move.colFrom][move.rowFrom];
+    matrix[move.colFrom][move.rowFrom] = Field();
+}
+
+std::ostream& operator<<(std::ostream& os, const ChessGameData::MoveType& obj)
 {
     constexpr char dictionary[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
     return os << dictionary[obj.colFrom] << obj.rowFrom + 1 << " => "
         << dictionary[obj.colTo] << obj.rowTo + 1;
 }
 
-std::string toString(const ChessGameState::MoveType& obj)
+std::string toString(const ChessGameData::MoveType& obj)
 {
     std::stringstream ssr;
     ssr << obj;
@@ -66,13 +72,13 @@ Ownership negate(Ownership original)
     }
 }
 
-bool operator==(ChessGameState::MoveType lhs, ChessGameState::MoveType rhs)
+bool operator==(ChessGameData::MoveType lhs, ChessGameData::MoveType rhs)
 {
     return std::tie(lhs.colFrom, lhs.rowFrom, lhs.colTo, lhs.rowTo)
         == std::tie(rhs.colFrom, rhs.rowFrom, rhs.colTo, rhs.rowTo);
 }
 
-BoardPosition getBoardPosition_From(const ChessGameState::MoveType& obj)
+BoardPosition getBoardPosition_From(const ChessGameData::MoveType& obj)
 {
     return BoardPosition{obj.colFrom, obj.rowFrom};
 }

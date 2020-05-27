@@ -14,7 +14,7 @@ void ChessGame::registerPlayer(Player& player)
         blackPlayer = &player;
 }
 
-void ChessGame::playerMoveCallback(Player& player, ChessGameState::MoveType move)
+void ChessGame::playerMoveCallback(Player& player, ChessGameData::MoveType move)
 {
     if (moveEvent.has_value())
         throw std::runtime_error("ChessGame::playerMoveCallback(): called when already holding a player move signal");

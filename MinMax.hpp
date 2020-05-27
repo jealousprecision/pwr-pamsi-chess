@@ -21,13 +21,13 @@ struct MinMax
         return mode == Mode::Maximizing ? Mode::Minimizing : Mode::Maximizing;
     }
 
-    static ChessGameState::MoveType getOptimalMove(
+    static ChessGameData::MoveType getOptimalMove(
         const ChessGame& game,
         PlayerColor color,
         unsigned depth)
     {
         int maxValue = std::numeric_limits<int>::min();
-        std::vector<ChessGameState::MoveType> optimalMoves;
+        std::vector<ChessGameData::MoveType> optimalMoves;
 
         const auto& movesMap = game.stateMachine.getCurrentState().getPossibleMoves();
 
@@ -66,7 +66,7 @@ struct MinMax
     }
 
     static int getValueOfDepth(
-        const ChessGameState& state,
+        const ChessGameData& state,
         PlayerColor currentPlayerColor,
         PlayerColor originalPlayer,
         Mode mode,

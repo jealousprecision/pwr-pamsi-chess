@@ -4,7 +4,7 @@
 
 #include <widgets/QSFMLWidget.hpp>
 #include <ChessGame/Player.hpp>
-#include <ChessGame/ChessGameState.hpp>
+#include <ChessGame/ChessGameData.hpp>
 
 class ChessGame;
 
@@ -36,6 +36,6 @@ protected:
     sf::Sprite markedSpr;
 
     // player oriented objects
-    std::vector<ChessGameState::MoveType> moves;
+    std::vector<ChessGameData::MoveType> moves;
     bool myTurn = false;
 };

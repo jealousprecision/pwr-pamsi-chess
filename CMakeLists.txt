@@ -20,10 +20,8 @@ set(Qt5_DIR "~/Qt/5.12.8/gcc_64/lib/cmake/Qt5/")
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_executable(pwr-pamsi-chess
-    main.cpp
-    #MinMax.cpp
-    ChessGame/ChessGameState.cpp
-    #ChessGame/ChessBasicBrancher.cpp
+    main.cpp    
+    ChessGame/ChessGameData.cpp
     ChessGame/ChessGame.cpp
     ChessGame/ChessHelpers.cpp
     ChessGame/Enums.cpp
