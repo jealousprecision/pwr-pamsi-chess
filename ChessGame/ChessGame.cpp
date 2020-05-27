@@ -34,7 +34,7 @@ Player& ChessGame::getCurrentPlayer()
 
 void ChessGame::start()
 {
-    if (!whitePlayer && !blackPlayer)
+    if (!whitePlayer || !blackPlayer)
         throw std::runtime_error("ChessGame::start(): white and/or black player not defined!");
 
     whitePlayer->yourTurnSlot();

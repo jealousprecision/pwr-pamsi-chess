@@ -160,15 +160,35 @@ std::tuple<unsigned, unsigned> getKing(const ChessGameState& source, PlayerColor
     throw std::runtime_error("getKing(): king not found!");
 }
 
+int getPieceValue(PieceType piece)
+{
+    switch(piece)
+    {
+    case PieceType::Pawn:
+        return 1;
+    case PieceType::Rook:
+        return 5;
+    case PieceType::Knight:
+        return 5;
+    case PieceType::Bishop:
+        return 5;
+    case PieceType::Queen:
+        return 20;
+    case PieceType::King:
+        return 100;
+    default:
+        throw std::runtime_error("getPossibleMovesForPiece(): bad enum value");
+    }
+}
+
 }  // namespace
 
-std::vector<ChessGameState::MoveType> getPossibleMovesForPiece(
+void getPossibleMovesForPiece(
         const ChessGameState& source,
+        std::vector<ChessGameState::MoveType>& result,
         unsigned col,
         unsigned row)
 {
-    std::vector<MoveType> result;
-
     switch(source.matrix[col][row].piece)
     {
     case PieceType::Pawn:
@@ -193,7 +213,15 @@ std::vector<ChessGameState::MoveType> getPossibleMovesForPiece(
     default:
         throw std::runtime_error("getPossibleMovesForPiece(): bad enum value");
     }
+}
 
+std::vector<ChessGameState::MoveType> getPossibleMovesForPiece(
+        const ChessGameState& source,
+        unsigned col,
+        unsigned row)
+{
+    std::vector<ChessGameState::MoveType> result;
+    getPossibleMovesForPiece(source, result, col, row);
     return result;
 }
 
@@ -202,6 +230,7 @@ std::vector<ChessGameState::MoveType> getAllPossibleMovesForPlayer(
         PlayerColor player)
 {
     std::vector<ChessGameState::MoveType> result;
+    result.reserve(1024);
     auto playerOwnerhip = toOwnership(player);
 
     for (unsigned col = 0; col < source.matrix.size(); ++col)
@@ -210,8 +239,8 @@ std::vector<ChessGameState::MoveType> getAllPossibleMovesForPlayer(
         {
             if (source.matrix[col][row].owner == playerOwnerhip)
             {
-                auto movesForPiece = getPossibleMovesForPiece(source, col, row);
-                std::move(movesForPiece.begin(), movesForPiece.end(), std::back_inserter(result));
+                getPossibleMovesForPiece(source, result, col, row);
+                //std::copy(movesForPiece.begin(), movesForPiece.end(), std::back_inserter(result));
             }
         }
     }
@@ -255,4 +284,25 @@ void filterOutMovesThatResultInCheck(
         });
 
     moves.erase(it, moves.end());
+}
+
+int evalGameState(const ChessGameState& source, PlayerColor player)
+{
+    int value = 0;
+
+    for (int col = 0; col < 8; ++col)
+    {
+        for (int row = 0; row < 8; ++row)
+        {
+            if (source.matrix[col][row].owner == Ownership::None)
+                continue;
+
+            if (source.matrix[col][row].owner == toOwnership(player))
+                value += getPieceValue(source.matrix[col][row].piece);
+            else
+                value -= getPieceValue(source.matrix[col][row].piece);
+        }
+    }
+
+    return value;
 }

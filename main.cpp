@@ -5,10 +5,11 @@
 #include <QApplication>
 #include <QFrame>
 
-#include "widgets/ChessSFMLWidget.hpp"
+#include <widgets/ChessSFMLWidget.hpp>
 
 #include <ChessGame/ChessGame.hpp>
 #include <ChessGame/DummyPlayer.hpp>
+#include <ChessGame/PlayerAi.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -25,19 +26,17 @@ int main(int argc, char *argv[])
     ChessSFMLWidget chessWidget(mainFrame, QPoint(20, 20), QSize(360, 360), game, PlayerColor::Black);
     chessWidget.show();
 
-    DummyPlayer white(game, PlayerColor::White);
-    DummyPlayer black(game, PlayerColor::Black);
+    PlayerAi playerAi(game, PlayerColor::White);
 
     QTimer timer;
     timer.callOnTimeout(
         [&]()
         {
-            white.update();
-            black.update();
+            playerAi.update();
             game.update();
         });
 
-    game.registerPlayer(white);
+    game.registerPlayer(playerAi);
     game.registerPlayer(chessWidget);
 
     game.start();

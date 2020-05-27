@@ -21,15 +21,15 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_executable(pwr-pamsi-chess
     main.cpp
-    MinMax.cpp
+    #MinMax.cpp
     ChessGame/ChessGameState.cpp
-    ChessGame/ChessBasicBrancher.cpp
+    #ChessGame/ChessBasicBrancher.cpp
     ChessGame/ChessGame.cpp
     ChessGame/ChessHelpers.cpp
     ChessGame/Enums.cpp
     ChessGame/Player.cpp
     ChessGame/DummyPlayer.cpp
-    #ChessGame/PlayerAi.cpp
+    ChessGame/PlayerAi.cpp
     ChessGame/States/ChessGameStateMachine.cpp
     ChessGame/States/ChessGameEndState.cpp
     ChessGame/States/ChessGameDefaultState.cpp

@@ -7,6 +7,8 @@ class ChessGame;
 class Player
 {
 public:
+    virtual ~Player() = default;
+
     Player(ChessGame& game, PlayerColor color);
 
     virtual void yourTurnSlot() = 0;

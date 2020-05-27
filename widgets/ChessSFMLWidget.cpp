@@ -120,8 +120,6 @@ void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
 
     if (event->button() == Qt::MouseButton::LeftButton && myTurn)
     {
-        std::cout << "mouse pressed" << std::endl;
-
         unsigned col = event->x() / REC_SIDE;
         unsigned row = event->y() / REC_SIDE;
 

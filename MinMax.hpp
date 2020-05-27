@@ -1,71 +1,112 @@
 #pragma once
 
-#include <memory>
-#include <stack>
-#include <queue>
 #include <limits>
-#include <list>
-#include <optional>
-#include <iostream>
+#include <functional>
+#include <vector>
 
-#include <ChessGame/IBrancher.hpp>
-#include <GraphList.hpp>
+#include <ChessGame/ChessGame.hpp>
+#include <ChessGame/Enums.hpp>
+#include <ChessGame/ChessHelpers.hpp>
 
-template<typename GameState>
-class MinMax
+struct MinMax
 {
-public:
-    MinMax(std::unique_ptr<IBrancher<GameState>> brancher) :
-        brancher_(std::move(brancher))
-    {}
-
-    typename GameState::MoveType getOptimalMove(const GameState& gameState)
+    enum class Mode
     {
-        graph_.clear();
-        auto src = graph_.addVertex(0);
-        brancher_->branch(gameState, graph_);
+        Minimizing,
+        Maximizing
+    };
 
-        std::optional<typename GameState::MoveType> bestMove;
-        int bestVal = std::numeric_limits<int>::min();
-        for (auto edge : graph_.getEdgesOut(src))
+    static Mode negate(Mode mode)
+    {
+        return mode == Mode::Maximizing ? Mode::Minimizing : Mode::Maximizing;
+    }
+
+    static ChessGameState::MoveType getOptimalMove(
+        const ChessGame& game,
+        PlayerColor color,
+        unsigned depth)
+    {
+        int maxValue = std::numeric_limits<int>::min();
+        std::vector<ChessGameState::MoveType> optimalMoves;
+
+        const auto& movesMap = game.stateMachine.getCurrentState().getPossibleMoves();
+
+        for (const auto& [startPos, moves] : movesMap)
         {
-            auto val = minMaxImpl(graph_.getVertexTo(edge));
-            if (val > bestVal)
+            for (auto move : moves)
             {
-                bestVal = val;
-                bestMove = graph_.getEdge(edge);
+                auto stateCopy = game.gameState;
+                stateCopy.apply(move);
+
+                // already done 1st move, now it opponents turn
+                auto eval = getValueOfDepth(
+                    stateCopy,
+                    ::negate(game.currentPlayerColor),
+                    game.currentPlayerColor,
+                    Mode::Minimizing,
+                    depth);
+
+                if (eval > maxValue)
+                {
+                    maxValue = eval;
+                    optimalMoves.clear();
+                    optimalMoves.push_back(move);
+                }
+                else if (eval == maxValue)
+                {
+                    optimalMoves.push_back(move);
+                }
             }
         }
 
-        if (bestVal == std::numeric_limits<int>::min())
-            throw std::runtime_error("MinMax::getOptimalMove(): move not found?");
+        if (optimalMoves.size() == 0)
+            throw std::runtime_error("MinMax::getOptimalMove(): no moves found?");
 
-        //std::cout << "MinMax::getOptimalMove(): move of value: " << bestVal << "; move: " << *bestMove << std::endl;
-        return *bestMove;
+        return optimalMoves[std::rand() % optimalMoves.size()];
     }
 
-protected:    
-    int minMaxImpl(unsigned vertex, bool isMax = false)
+    static int getValueOfDepth(
+        const ChessGameState& state,
+        PlayerColor currentPlayerColor,
+        PlayerColor originalPlayer,
+        Mode mode,
+        unsigned depth)
     {
-        auto& edgesOut = graph_.getEdgesOut(vertex);
+        if (depth == 0)
+            return evalGameState(state, originalPlayer);
 
-        if (edgesOut.size() == 0)
-            return graph_.getVertex(vertex);
-
-        auto result = isMax ? std::numeric_limits<int>::min() : std::numeric_limits<int>::max();
-        for (auto edge : edgesOut)
+        std::function<bool(int, int)> cmp;
+        int maxValue;
+        if (mode == Mode::Maximizing)
         {
-            auto dest = graph_.getVertexTo(edge);
-            if (isMax)
-                result = std::max(result, minMaxImpl(dest, false));
-            else
-                result = std::min(result, minMaxImpl(dest, true));
+            cmp = std::less<int>();
+            maxValue = std::numeric_limits<int>::min();
+        }
+        else
+        {
+            cmp = std::greater<int>();
+            maxValue = std::numeric_limits<int>::max();
         }
 
-        return result;
+        auto moves = getAllPossibleMovesForPlayer(state, currentPlayerColor);
+        filterOutMovesThatResultInCheck(state, moves, currentPlayerColor);
+
+        for (auto move : moves)
+        {
+            auto stateCopy = state;
+            stateCopy.apply(move);
+
+            auto eval = getValueOfDepth(
+                stateCopy,
+                ::negate(currentPlayerColor),
+                originalPlayer,
+                negate(mode),
+                depth - 1);
+
+            if (cmp(maxValue, eval))
+                maxValue = eval;
+        }
+
+        return maxValue;
     }
-
-    GraphList<int, typename GameState::MoveType> graph_;
-    std::unique_ptr<IBrancher<GameState>> brancher_;
 };
-

@@ -25,3 +25,5 @@ void filterOutMovesThatResultInCheck(
         const ChessGameState& gameState,
         std::vector<ChessGameState::MoveType>& moves,
         PlayerColor color);
+
+int evalGameState(const ChessGameState& source, PlayerColor color);

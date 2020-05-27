@@ -2,13 +2,18 @@
 
 #include <ChessGame/Player.hpp>
 #include <ChessGame/ChessGameState.hpp>
-#include <MinMax.hpp>
 
 class PlayerAi : public Player
 {
 public:
-    PlayerAi(ChessGame& game);
+    PlayerAi(ChessGame& game, PlayerColor color);
+
+    void yourTurnSlot() override;
+    void gameEndedSlot(bool won) override;
+    PieceType promotionSlot() override;
+    void update();
 
 protected:
-    MinMax<ChessGameState> minMax;
+    bool myTurn_ = false;
+    bool isPlaying_ = true;
 };
