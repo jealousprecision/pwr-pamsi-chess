@@ -24,12 +24,16 @@ public:
     void update();
     void playerMoveCallback(Player& player, ChessGameData::MoveType move);
 
-    Player* whitePlayer = nullptr;
-    Player* blackPlayer = nullptr;
     PlayerColor currentPlayerColor = PlayerColor::White;
     ChessGameData gameState;
-    std::optional<MoveEvent> moveEvent;
     ChessGameStateMachine stateMachine;
 
+    std::optional<MoveEvent> moveEvent;
+    std::optional<ChessGameData::MoveType> lastMove;
+
+
+private:
+    Player* whitePlayer = nullptr;
+    Player* blackPlayer = nullptr;
     bool hasStarted = false;
 };

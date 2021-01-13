@@ -70,20 +70,39 @@ void ChessSFMLWidget::OnInit()
         pieceBlackToSpriteMap[pieces[i]] = sf::Sprite(spritesheet, rect);
     }
 
-    //markedTxt.loadFromFile("./graphics/marked.png");
     markedSpr.setTexture(spritesheet);
     sf::Rect<int> markedRect(0, 360 + 2 * 45, 45, 45);
     markedSpr.setTextureRect(markedRect);
+
+    lastMoveMarkedSpr.setTexture(spritesheet);
+    sf::Rect<int> lastMoveMarkedRect(45, 360 + 2 * 45, 45, 45);
+    lastMoveMarkedSpr.setTextureRect(lastMoveMarkedRect);
 }
 
 void ChessSFMLWidget::OnUpdate()
 {
+    constexpr auto REC_SIDE = 45u;
+
     clear(sf::Color(255, 255, 255));
     draw(boardSpr);
 
     auto& state = game_.gameState.matrix;
 
-    constexpr auto REC_SIDE = 45u;
+    if (game_.lastMove)
+    {
+        const auto drawField = [this](auto row, auto col)
+            {
+                sf::Transform transform;
+                transform.translate(col * REC_SIDE, row * REC_SIDE);
+                sf::RenderStates renderState(transform);
+
+                draw(lastMoveMarkedSpr, renderState);
+            };
+
+        drawField(game_.lastMove->rowFrom, game_.lastMove->colFrom);
+        drawField(game_.lastMove->rowTo, game_.lastMove->colTo);
+    }
+
     for (unsigned col = 0; col < state.size(); ++col)
     {
         for (unsigned row = 0; row < state[0].size(); ++row)

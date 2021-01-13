@@ -20,6 +20,8 @@ void ChessGameCheckState::update()
             throw std::runtime_error("ChessGameDefaultState::update(): moveEvent not possible: " + toString(move.moveType));
 
         game_.gameState.apply(move.moveType);
+        game_.lastMove = move.moveType;
+
         if (auto pawnAtEnd = getPawnAtEnd(game_.gameState, game_.currentPlayerColor))
         {
             auto piece = game_.getCurrentPlayer().promotionResponse();

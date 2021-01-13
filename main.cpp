@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
             playerAi.update();
             game.update();
         });
+    timer.setInterval(500);
 
     game.registerPlayer(playerAi);
     game.registerPlayer(chessWidget);

@@ -34,6 +34,7 @@ protected:
     std::map<PieceType, sf::Sprite> pieceWhiteToSpriteMap;
     std::map<PieceType, sf::Sprite> pieceBlackToSpriteMap;
     sf::Sprite markedSpr;
+    sf::Sprite lastMoveMarkedSpr;
 
     // player oriented objects
     std::vector<ChessGameData::MoveType> moves;

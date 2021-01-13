@@ -32,7 +32,7 @@ void QSFMLCanvas::showEvent(QShowEvent*)
             XFlush(QX11Info::display());
         #endif
 
-        sf::RenderWindow::create(winId());
+        sf::RenderWindow::create(reinterpret_cast<sf::WindowHandle>(winId()));
         OnInit();
 
         connect(&timer_, SIGNAL(timeout()), this, SLOT(repaint()));
