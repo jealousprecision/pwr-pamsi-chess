@@ -23,25 +23,17 @@ int main(int argc, char *argv[])
 
     ChessGame game;
 
-    ChessSFMLWidget chessWidget(mainFrame, QPoint(20, 20), QSize(360, 360), game, PlayerColor::Black);
-    chessWidget.show();
+    ChessSFMLWidget* chessWidget = new ChessSFMLWidget(mainFrame, QPoint(20, 20), QSize(360, 360), game, PlayerColor::Black);
+    chessWidget->show();
+    chessWidget->setParent(mainFrame);
 
-    PlayerAi playerAi(game, PlayerColor::White);
-
-    QTimer timer;
-    timer.callOnTimeout(
-        [&]()
-        {
-            playerAi.update();
-            game.update();
-        });
-    timer.setInterval(500);
+    //PlayerAi playerAi(game, PlayerColor::White);
+    DummyPlayer playerAi(game, PlayerColor::White);
 
     game.registerPlayer(playerAi);
-    game.registerPlayer(chessWidget);
+    game.registerPlayer(*chessWidget);
 
     game.start();
-    timer.start();
 
     return a.exec();
 }

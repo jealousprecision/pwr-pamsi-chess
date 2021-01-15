@@ -8,10 +8,10 @@
 
 void ChessGameCheckState::update()
 {
-    if (game_.moveEvent.has_value())
+    while (!game_.waitingMoves.empty())
     {
-        auto move = game_.moveEvent.value();
-        game_.moveEvent.reset();
+        auto move = game_.waitingMoves.front();
+        game_.waitingMoves.pop();
 
         if (!isMoveEventValid(move, game_))
             throw std::runtime_error("ChessGameDefaultState::update(): moveEvent not valid: " + toString(move.moveType));
@@ -39,6 +39,7 @@ void ChessGameCheckState::update()
         {
             game_.stateMachine.changeState(ChessGameStateMachine::State::Default);
             game_.getCurrentPlayer().yourTurnCallback();
+            return;
         }
     }
 }

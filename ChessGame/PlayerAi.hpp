@@ -11,9 +11,7 @@ public:
     void yourTurnCallback() override;
     void gameEndedCallback(bool won) override;
     PieceType promotionResponse() override;
-    void update();
 
 protected:
-    bool myTurn_ = false;
     bool isPlaying_ = true;
 };

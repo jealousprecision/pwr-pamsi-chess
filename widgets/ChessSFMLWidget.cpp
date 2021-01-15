@@ -152,8 +152,8 @@ void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
 
             if (found != moves.end())
             {
-                game_.playerMoveCallback(*this, *found);
                 myTurn = false;
+                game_.playerMoveCallback(*this, *found);
                 moves.clear();
                 return;
             }

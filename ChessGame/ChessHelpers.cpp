@@ -162,7 +162,7 @@ std::tuple<unsigned, unsigned> getKing(const ChessGameData& source, PlayerColor 
 
 int getPieceValue(PieceType piece)
 {
-    switch(piece)
+    switch (piece)
     {
     case PieceType::Pawn:
         return 1;
@@ -176,9 +176,9 @@ int getPieceValue(PieceType piece)
         return 20;
     case PieceType::King:
         return 100;
-    default:
-        throw std::runtime_error("getPossibleMovesForPiece(): bad enum value");
     }
+
+    throw std::runtime_error("getPossibleMovesForPiece(): bad enum value");
 }
 
 }  // namespace

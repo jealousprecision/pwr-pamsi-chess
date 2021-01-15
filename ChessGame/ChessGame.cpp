@@ -16,10 +16,16 @@ void ChessGame::registerPlayer(Player& player)
 
 void ChessGame::playerMoveCallback(Player& player, ChessGameData::MoveType move)
 {
-    if (moveEvent.has_value())
-        throw std::runtime_error("ChessGame::playerMoveCallback(): called when already holding a player move signal");
-
-    moveEvent.emplace(MoveEvent{player, move});
+    waitingMoves.push(MoveEvent{player, move});
+    if (!stateMachineUpdating)
+    {
+        stateMachineUpdating = true;
+        while (!waitingMoves.empty())
+        {
+            stateMachine.update();
+        }
+        stateMachineUpdating = false;
+    }
 }
 
 Player& ChessGame::getPlayer(PlayerColor color)
@@ -38,11 +44,4 @@ void ChessGame::start()
         throw std::runtime_error("ChessGame::start(): white and/or black player not defined!");
 
     whitePlayer->yourTurnCallback();
-    hasStarted = true;
-}
-
-void ChessGame::update()
-{
-    if (hasStarted)
-        stateMachine.update();
 }

@@ -14,10 +14,10 @@ void ChessGameDefaultState::onInit()
 
 void ChessGameDefaultState::update()
 {
-    if (game_.moveEvent.has_value())
+    while (!game_.waitingMoves.empty())
     {
-        auto move = game_.moveEvent.value();
-        game_.moveEvent.reset();
+        auto move = game_.waitingMoves.front();
+        game_.waitingMoves.pop();
 
         if (!isMoveEventValid(move, game_))
             throw std::runtime_error("ChessGameDefaultState::update(): moveEvent not valid: " + toString(move.moveType));
@@ -39,13 +39,13 @@ void ChessGameDefaultState::update()
         if (isPlayerInCheck(game_.gameState, game_.currentPlayerColor))
         {
             game_.stateMachine.changeState(ChessGameStateMachine::State::Check);
+            game_.getCurrentPlayer().yourTurnCallback();
+            return;
         }
-        else
-        {
-            // prepare for next's player moves
-            possibleMoves_.clear();
-            initPossibleMoves_();
-        }
+
+        // prepare for next's player moves
+        possibleMoves_.clear();
+        initPossibleMoves_();
 
         game_.getCurrentPlayer().yourTurnCallback();
     }

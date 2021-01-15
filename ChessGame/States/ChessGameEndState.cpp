@@ -4,7 +4,7 @@
 
 void ChessGameEndState::update()
 {
-
+    throw std::runtime_error("ChessGameEndState::getPossibleMoves(): no updates for ended game");
 }
 
 const BoardPositionToPossibleMovesMap& ChessGameEndState::getPossibleMoves() const

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <optional>
+#include <queue>
 #include <ChessGame/Player.hpp>
 #include <ChessGame/ChessGameData.hpp>
 #include <ChessGame/States/ChessGameStateMachine.hpp>
@@ -21,19 +22,18 @@ public:
     Player& getCurrentPlayer();
     Player& getPlayer(PlayerColor color);
     void start();
-    void update();
     void playerMoveCallback(Player& player, ChessGameData::MoveType move);
 
     PlayerColor currentPlayerColor = PlayerColor::White;
     ChessGameData gameState;
     ChessGameStateMachine stateMachine;
 
-    std::optional<MoveEvent> moveEvent;
+    std::queue<MoveEvent> waitingMoves;
     std::optional<ChessGameData::MoveType> lastMove;
 
 
 private:
     Player* whitePlayer = nullptr;
     Player* blackPlayer = nullptr;
-    bool hasStarted = false;
+    bool stateMachineUpdating = false;
 };

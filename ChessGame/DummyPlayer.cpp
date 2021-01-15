@@ -17,27 +17,14 @@ ChessGameData::MoveType getRandomMove(const BoardPositionToPossibleMovesMap& map
 
 }  // namespace
 
-void DummyPlayer::update()
-{
-    if (yourTurn_ && isPlaying)
-    {
-        yourTurn_ = false;
-        //std::cout << "DummyPlayer(" << toString(color_) << "): ";
-
-        //ChessGameState::MoveType move;
-        //std::cin >> move.colFrom >> move.rowFrom >> move.colTo >> move.rowTo;
-
-        auto move = getRandomMove(game_.stateMachine.getCurrentState().getPossibleMoves());
-
-        std::cout << "DummyPlayer(" << toString(color_) << "): " << move << std::endl;
-
-        game_.playerMoveCallback(*this, move);
-    }
-}
-
 void DummyPlayer::yourTurnCallback()
 {
-    yourTurn_ = true;
+    if (isPlaying)
+    {
+        auto move = getRandomMove(game_.stateMachine.getCurrentState().getPossibleMoves());
+        std::cout << "DummyPlayer(" << toString(color_) << "): " << move << std::endl;
+        game_.playerMoveCallback(*this, move);
+    }
 }
 
 PieceType DummyPlayer::promotionResponse()
@@ -46,7 +33,7 @@ PieceType DummyPlayer::promotionResponse()
     return pieces[std::rand() % 4];
 }
 
-void DummyPlayer::gameEndedCallback(bool won)
+void DummyPlayer::gameEndedCallback(bool)
 {
     isPlaying = false;
 }
