@@ -2,9 +2,9 @@
 
 #include <stdexcept>
 
-void ChessGameEndState::update()
+bool ChessGameEndState::applyMove(const Move&)
 {
-    throw std::runtime_error("ChessGameEndState::getPossibleMoves(): no updates for ended game");
+    return false;
 }
 
 const BoardPositionToPossibleMovesMap& ChessGameEndState::getPossibleMoves() const

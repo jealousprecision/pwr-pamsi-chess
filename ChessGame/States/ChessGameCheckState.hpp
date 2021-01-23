@@ -1,25 +1,22 @@
 #pragma once
 
 #include <ChessGame/States/IChessGameState.hpp>
-#include <ChessGame/ChessGameData.hpp>
 
 class ChessGame;
 
 class ChessGameCheckState : public IChessGameState
 {
 public:
-    ChessGameCheckState(ChessGame& game) :
-        game_(game)
-    {}
+    ChessGameCheckState(ChessGame& game);
 
     void onInit() override;
-    void update() override;
+    bool applyMove(const Move& move) override;
     void onExit() override;
     const BoardPositionToPossibleMovesMap& getPossibleMoves() const override;
 
-protected:
+private:
     void initPossibleMovesMap_();
 
     ChessGame& game_;
-    BoardPositionToPossibleMovesMap possibleMovesMap_;
+    BoardPositionToPossibleMovesMap possibleMoves_;
 };

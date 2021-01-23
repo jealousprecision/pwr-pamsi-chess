@@ -14,15 +14,27 @@ void ChessGame::registerPlayer(Player& player)
         blackPlayer = &player;
 }
 
-void ChessGame::playerMoveCallback(Player& player, ChessGameData::MoveType move)
+void ChessGame::playerMoveCallback(Move move)
 {
-    waitingMoves.push(MoveEvent{player, move});
+    waitingMoves.push(move);
+
     if (!stateMachineUpdating)
     {
         stateMachineUpdating = true;
         while (!waitingMoves.empty())
         {
-            stateMachine.update();
+            auto move = waitingMoves.front();
+            waitingMoves.pop();
+
+            if (!stateMachine.applyMove(move) || playerThatWon)
+            {
+                // game ended
+                getPlayer(playerThatWon.value()).gameEndedCallback(true);
+                getPlayer(negate(playerThatWon.value())).gameEndedCallback(false);
+
+                break;
+            }
+            getCurrentPlayer().yourTurnCallback();
         }
         stateMachineUpdating = false;
     }

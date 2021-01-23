@@ -37,6 +37,6 @@ protected:
     sf::Sprite lastMoveMarkedSpr;
 
     // player oriented objects
-    std::vector<ChessGameData::MoveType> moves;
+    std::vector<Move> moves;
     bool myTurn = false;
 };

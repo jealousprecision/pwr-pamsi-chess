@@ -153,7 +153,7 @@ void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
             if (found != moves.end())
             {
                 myTurn = false;
-                game_.playerMoveCallback(*this, *found);
+                game_.playerMoveCallback(*found);
                 moves.clear();
                 return;
             }
@@ -161,7 +161,7 @@ void ChessSFMLWidget::mousePressEvent(QMouseEvent *event)
 
         if (inBounds(col, row) && game_.gameState.matrix[col][row].owner == toOwnership(color_))
         {
-            const auto& movesMap = game_.stateMachine.getCurrentState().getPossibleMoves();
+            const auto& movesMap = game_.stateMachine.getPossibleMoves();
             BoardPosition pos{col, row};
             if (movesMap.count(pos))
                 moves = movesMap.at(pos);

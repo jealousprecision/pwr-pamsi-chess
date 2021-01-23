@@ -8,7 +8,7 @@
 ChessGameStateMachine::ChessGameStateMachine(ChessGame& game) :
     defaultState_(std::make_unique<ChessGameDefaultState>(game)),
     checkState_(std::make_unique<ChessGameCheckState>(game)),
-    endState_(std::make_unique<ChessGameEndState>(game)),
+    endState_(std::make_unique<ChessGameEndState>()),
     currentState(defaultState_.get())
 {
     currentState->onInit();
@@ -34,12 +34,12 @@ void ChessGameStateMachine::changeState(ChessGameStateMachine::State state)
     currentState->onInit();
 }
 
-void ChessGameStateMachine::update()
+bool ChessGameStateMachine::applyMove(const Move& move)
 {
-    currentState->update();
+    return currentState->applyMove(move);
 }
 
-const IChessGameState& ChessGameStateMachine::getCurrentState() const
+const BoardPositionToPossibleMovesMap& ChessGameStateMachine::getPossibleMoves() const
 {
-    return *currentState;
+    return currentState->getPossibleMoves();
 }

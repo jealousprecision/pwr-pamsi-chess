@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <ChessGame/ChessGame.hpp>
+#include <ChessGame/ChessGameData.hpp>
 #include <ChessGame/Enums.hpp>
 #include <ChessGame/ChessHelpers.hpp>
 
@@ -21,15 +22,15 @@ struct MinMax
         return mode == Mode::Maximizing ? Mode::Minimizing : Mode::Maximizing;
     }
 
-    static ChessGameData::MoveType getOptimalMove(
+    static Move getOptimalMove(
         const ChessGame& game,
         PlayerColor color,
         unsigned depth)
     {
         int maxValue = std::numeric_limits<int>::min();
-        std::vector<ChessGameData::MoveType> optimalMoves;
+        std::vector<Move> optimalMoves;
 
-        const auto& movesMap = game.stateMachine.getCurrentState().getPossibleMoves();
+        const auto& movesMap = game.stateMachine.getPossibleMoves();
 
         for (const auto& [startPos, moves] : movesMap)
         {

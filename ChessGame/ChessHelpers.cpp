@@ -4,11 +4,10 @@
 #include <vector>
 #include <tuple>
 #include <ChessGame/ChessGameData.hpp>
+#include <ChessGame/ChessGame.hpp>
 
 namespace
 {
-
-using MoveType = ChessGameData::MoveType;
 
 bool inBounds(int col, int row)
 {
@@ -20,7 +19,7 @@ void downLeft(int& c, int& r) {c--, r++;}
 void upRight(int& c, int& r) {c++, r--;}
 void upLeft(int& c, int& r) {c--, r--;}
 
-void addDiagonalMovements(std::vector<MoveType>& movements, const ChessGameData& source, unsigned col, unsigned row)
+void addDiagonalMovements(std::vector<Move>& movements, const ChessGameData& source, unsigned col, unsigned row)
 {
     auto player = source.matrix[col][row].owner;
 
@@ -33,7 +32,7 @@ void addDiagonalMovements(std::vector<MoveType>& movements, const ChessGameData&
         {
             if (source.matrix[c][r].owner == player)
                 break;
-            movements.push_back(MoveType{col, row, static_cast<unsigned>(c), static_cast<unsigned>(r)});
+            movements.push_back(Move{col, row, static_cast<unsigned>(c), static_cast<unsigned>(r)});
             if (source.matrix[c][r].owner != Ownership::None)
                 break;
         }
@@ -45,7 +44,7 @@ void up(int& c, int& r) { r--; }
 void left(int& c, int& r) { c--; }
 void right(int& c, int& r) { c++; }
 
-void addLineMovements(std::vector<MoveType>& movements, const ChessGameData& source, unsigned col, unsigned row)
+void addLineMovements(std::vector<Move>& movements, const ChessGameData& source, unsigned col, unsigned row)
 {
     auto player = source.matrix[col][row].owner;
     for (auto deltaFunc : {down, up, left, right})
@@ -57,7 +56,7 @@ void addLineMovements(std::vector<MoveType>& movements, const ChessGameData& sou
         {
             if (source.matrix[c][r].owner == player)
                 break;
-            movements.push_back(MoveType{col, row, static_cast<unsigned>(c), static_cast<unsigned>(r)});
+            movements.push_back(Move{col, row, static_cast<unsigned>(c), static_cast<unsigned>(r)});
             if (source.matrix[c][r].owner != Ownership::None)
                 break;
         }
@@ -72,7 +71,7 @@ std::vector<void(*)(int&, int&)> getDiagonalFncLst(void (*func)(int&, int&))
         return {&down, &up};
 }
 
-void addKnightMovements(std::vector<MoveType>& movements, const ChessGameData& source, unsigned col, unsigned row)
+void addKnightMovements(std::vector<Move>& movements, const ChessGameData& source, unsigned col, unsigned row)
 {
     auto player = source.matrix[col][row].owner;
 
@@ -97,34 +96,34 @@ void addKnightMovements(std::vector<MoveType>& movements, const ChessGameData& s
             if (source.matrix[c2][r2].owner == player)
                 continue;
 
-            movements.push_back(MoveType{col, row, static_cast<unsigned>(c2), static_cast<unsigned>(r2)});
+            movements.push_back(Move{col, row, static_cast<unsigned>(c2), static_cast<unsigned>(r2)});
         }
     }
 }
 
-void addPawnMovements(std::vector<MoveType>& movements, const ChessGameData& source, unsigned col, unsigned row)
+void addPawnMovements(std::vector<Move>& movements, const ChessGameData& source, unsigned col, unsigned row)
 {
     int delta = source.matrix[col][row].owner == Ownership::White ? 1 : -1;
     auto enemy = source.matrix[col][row].owner == Ownership::White ? Ownership::Black : Ownership::White;
 
     if (inBounds(col + 1, row + delta) && source.matrix[col + 1][row + delta].owner == enemy)
-        movements.push_back(MoveType{col, row, col + 1, row + delta});
+        movements.push_back(Move{col, row, col + 1, row + delta});
 
     if (inBounds(col - 1, row + delta) && source.matrix[col - 1][row + delta].owner == enemy)
-        movements.push_back(MoveType{col, row, col - 1, row + delta});
+        movements.push_back(Move{col, row, col - 1, row + delta});
 
     if (inBounds(col, row + delta) && source.matrix[col][row + delta].owner == Ownership::None)
     {
-        movements.push_back(MoveType{col, row, col, row + delta});
+        movements.push_back(Move{col, row, col, row + delta});
 
         if (enemy == Ownership::Black && row == 1 && source.matrix[col][row + 2 * delta].owner == Ownership::None)
-            movements.push_back(MoveType{col, row, col, row + 2 * delta});
+            movements.push_back(Move{col, row, col, row + 2 * delta});
         else if (enemy == Ownership::White && row == 6 && source.matrix[col][row + 2 * delta].owner == Ownership::None)
-            movements.push_back(MoveType{col, row, col, row + 2 * delta});
+            movements.push_back(Move{col, row, col, row + 2 * delta});
     }
 }
 
-void addKingMovements(std::vector<MoveType>& movements, const ChessGameData& source, unsigned col, unsigned row)
+void addKingMovements(std::vector<Move>& movements, const ChessGameData& source, unsigned col, unsigned row)
 {
     auto player = source.matrix[col][row].owner;
 
@@ -141,13 +140,12 @@ void addKingMovements(std::vector<MoveType>& movements, const ChessGameData& sou
             if (source.matrix[col + c_delta][row + r_delta].owner == player)
                 continue;
 
-            movements.push_back(MoveType{col, row, col + c_delta, row + r_delta});
+            movements.push_back(Move{col, row, col + c_delta, row + r_delta});
         }
     }
 }
 
-// col, row
-std::tuple<unsigned, unsigned> getKing(const ChessGameData& source, PlayerColor kingColor)
+BoardPosition getKing(const ChessGameData& source, PlayerColor kingColor)
 {
     constexpr auto ChessSize = 8u;
 
@@ -185,7 +183,7 @@ int getPieceValue(PieceType piece)
 
 void getPossibleMovesForPiece(
         const ChessGameData& source,
-        std::vector<ChessGameData::MoveType>& result,
+        std::vector<Move>& result,
         unsigned col,
         unsigned row)
 {
@@ -215,21 +213,21 @@ void getPossibleMovesForPiece(
     }
 }
 
-std::vector<ChessGameData::MoveType> getPossibleMovesForPiece(
+std::vector<Move> getPossibleMovesForPiece(
         const ChessGameData& source,
         unsigned col,
         unsigned row)
 {
-    std::vector<ChessGameData::MoveType> result;
+    std::vector<Move> result;
     getPossibleMovesForPiece(source, result, col, row);
     return result;
 }
 
-std::vector<ChessGameData::MoveType> getAllPossibleMovesForPlayer(
+std::vector<Move> getAllPossibleMovesForPlayer(
         const ChessGameData& source,
         PlayerColor player)
 {
-    std::vector<ChessGameData::MoveType> result;
+    std::vector<Move> result;
     result.reserve(1024);
     auto playerOwnerhip = toOwnership(player);
 
@@ -250,7 +248,7 @@ std::vector<ChessGameData::MoveType> getAllPossibleMovesForPlayer(
 
 Ownership getOwnershipOfFieldFrom(
         const ChessGameData& source,
-        ChessGameData::MoveType move)
+        Move move)
 {
     return source.matrix[move.colFrom][move.rowFrom].owner;
 }
@@ -259,19 +257,18 @@ bool isPlayerInCheck(
     const ChessGameData& source,
     PlayerColor player)
 {
-    auto [kingCol, kingRow] = getKing(source, player);
+    auto moves = getAllPossibleMovesForPlayer(source, negate(player));    
+    auto beatsKing = [kingPos = getKing(source, player)](const auto& move)
+        {
+            return move.colTo == kingPos.col && move.rowTo == kingPos.row;
+        };
 
-    auto moves = getAllPossibleMovesForPlayer(source, negate(player));
-    for (auto move : moves)
-        if (move.colTo == kingCol && move.rowTo == kingRow)
-            return true;
-
-    return false;
+    return std::any_of(moves.begin(), moves.end(), beatsKing);
 }
 
 void filterOutMovesThatResultInCheck(
     const ChessGameData& gameState,
-    std::vector<ChessGameData::MoveType>& moves,
+    std::vector<Move>& moves,
     PlayerColor color)
 {
     auto it  = std::remove_if(moves.begin(), moves.end(),
@@ -306,3 +303,43 @@ int evalGameState(const ChessGameData& source, PlayerColor player)
 
     return value;
 }
+
+std::optional<BoardPosition> getPawnAtEnd(const ChessGameData& gameState, PlayerColor color)
+{
+    constexpr auto boardSize = 8u;
+
+    if (color == PlayerColor::White)
+    {
+        for (unsigned col = 0; col < boardSize; ++col)
+            if (gameState.matrix[col][7].piece == PieceType::Pawn)
+                return BoardPosition{col, 7};
+    }
+    else
+    {
+        for (unsigned col = 0; col < boardSize; ++col)
+            if (gameState.matrix[col][0].piece == PieceType::Pawn)
+                return BoardPosition{col, 0};
+    }
+
+    return std::nullopt;
+}
+
+void applyMoveToChessGame(const Move& move, ChessGame& chessGame, const BoardPositionToPossibleMovesMap& possibleMoves)
+{
+    if (!possibleMoves.count(getBoardPosition_From(move)))
+    {
+        throw std::runtime_error("ChessGameDefaultState::update(): move not possible: " + toString(move));
+    }
+
+    chessGame.gameState.apply(move);
+    chessGame.lastMove = move;
+
+    if (auto pawnAtEnd = getPawnAtEnd(chessGame.gameState, chessGame.currentPlayerColor))
+    {
+        auto piece = chessGame.getCurrentPlayer().promotionResponse();
+        chessGame.gameState.matrix[pawnAtEnd->col][pawnAtEnd->row].piece = piece;
+    }
+
+    chessGame.currentPlayerColor = negate(chessGame.currentPlayerColor);
+}
+

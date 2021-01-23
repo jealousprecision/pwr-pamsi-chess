@@ -17,6 +17,7 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_executable(pwr-pamsi-chess
     main.cpp    
+    ChessGame/BoardPositionToPossibleMovesMap.cpp
     ChessGame/ChessGameData.cpp
     ChessGame/ChessGame.cpp
     ChessGame/ChessHelpers.cpp
@@ -28,7 +29,6 @@ add_executable(pwr-pamsi-chess
     ChessGame/States/ChessGameEndState.cpp
     ChessGame/States/ChessGameDefaultState.cpp
     ChessGame/States/ChessGameCheckState.cpp
-    ChessGame/States/ChessGameStatesHelpers.cpp
     widgets/QSFMLWidget.cpp
     widgets/ChessSFMLWidget.cpp
 )

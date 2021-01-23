@@ -5,11 +5,12 @@
 #include <ChessGame/ChessGameData.hpp>
 #include <ChessGame/ChessGame.hpp>
 #include <ChessGame/ChessHelpers.hpp>
+#include <ChessGame/BoardPositionToPossibleMovesMap.hpp>
 
 namespace
 {
 
-ChessGameData::MoveType getRandomMove(const BoardPositionToPossibleMovesMap& map)
+Move getRandomMove(const BoardPositionToPossibleMovesMap& map)
 {
     const auto& vec = std::next(map.begin(), std::rand() % map.size())->second;
     return vec[std::rand() % vec.size()];
@@ -21,9 +22,9 @@ void DummyPlayer::yourTurnCallback()
 {
     if (isPlaying)
     {
-        auto move = getRandomMove(game_.stateMachine.getCurrentState().getPossibleMoves());
+        auto move = getRandomMove(game_.stateMachine.getPossibleMoves());
         std::cout << "DummyPlayer(" << toString(color_) << "): " << move << std::endl;
-        game_.playerMoveCallback(*this, move);
+        game_.playerMoveCallback(move);
     }
 }
 

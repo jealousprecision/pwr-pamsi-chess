@@ -18,10 +18,10 @@ public:
     ChessGameStateMachine(ChessGame& game);
 
     void changeState(State state);
-    void update();
-    const IChessGameState& getCurrentState() const;
+    bool applyMove(const Move& move);
+    const BoardPositionToPossibleMovesMap& getPossibleMoves() const;
 
-protected:
+private:
     std::unique_ptr<IChessGameState> defaultState_;
     std::unique_ptr<IChessGameState> checkState_;
     std::unique_ptr<IChessGameState> endState_;

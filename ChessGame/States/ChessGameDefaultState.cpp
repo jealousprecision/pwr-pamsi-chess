@@ -5,50 +5,32 @@
 
 #include <ChessGame/ChessGame.hpp>
 #include <ChessGame/ChessHelpers.hpp>
-#include <ChessGame/States/ChessGameStatesHelpers.hpp>
+
+ChessGameDefaultState::ChessGameDefaultState(ChessGame& chessGame)
+    : game_(chessGame)
+{}
 
 void ChessGameDefaultState::onInit()
 {
     initPossibleMoves_();
 }
 
-void ChessGameDefaultState::update()
-{
-    while (!game_.waitingMoves.empty())
+bool ChessGameDefaultState::applyMove(const Move& move)
+{   
+    applyMoveToChessGame(move, game_, possibleMoves_);
+
+    // if next player is in check, change state
+    if (isPlayerInCheck(game_.gameState, game_.currentPlayerColor))
     {
-        auto move = game_.waitingMoves.front();
-        game_.waitingMoves.pop();
-
-        if (!isMoveEventValid(move, game_))
-            throw std::runtime_error("ChessGameDefaultState::update(): moveEvent not valid: " + toString(move.moveType));
-
-        if (!possibleMoves_.count(getBoardPosition_From(move.moveType)))
-            throw std::runtime_error("ChessGameDefaultState::update(): moveEvent not possible: " + toString(move.moveType));
-
-        game_.gameState.apply(move.moveType);
-        game_.lastMove = move.moveType;
-
-        if (auto pawnAtEnd = getPawnAtEnd(game_.gameState, game_.currentPlayerColor))
-        {
-            auto piece = game_.getCurrentPlayer().promotionResponse();
-            game_.gameState.matrix[pawnAtEnd->col][pawnAtEnd->row].piece = piece;
-        }
-        game_.currentPlayerColor = negate(game_.currentPlayerColor);
-
-        // if next player is in check, change state
-        if (isPlayerInCheck(game_.gameState, game_.currentPlayerColor))
-        {
-            game_.stateMachine.changeState(ChessGameStateMachine::State::Check);
-            game_.getCurrentPlayer().yourTurnCallback();
-            return;
-        }
-
+        game_.stateMachine.changeState(ChessGameStateMachine::State::Check);
+    }
+    else
+    {
         // prepare for next's player moves
         possibleMoves_.clear();
         initPossibleMoves_();
-
-        game_.getCurrentPlayer().yourTurnCallback();
     }
+    return true;
 }
 
 void ChessGameDefaultState::onExit()
@@ -67,5 +49,7 @@ void ChessGameDefaultState::initPossibleMoves_()
     filterOutMovesThatResultInCheck(game_.gameState, allMoves, game_.currentPlayerColor);
 
     for (auto move : allMoves)
+    {
         possibleMoves_[BoardPosition{move.colFrom, move.rowFrom}].push_back(move);
+    }
 }

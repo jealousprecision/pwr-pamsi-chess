@@ -7,15 +7,15 @@ enum class PieceType
     Unused,
     King,
     Queen,
-    Rook,  // tower
+    Rook,
     Bishop,
-    Knight, // horse
+    Knight,
     Pawn
 };
 
 enum class Ownership
 {
-    None, // When field is empty
+    None,
     White,
     Black
 };

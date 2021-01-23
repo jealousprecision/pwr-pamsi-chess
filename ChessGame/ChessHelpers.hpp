@@ -1,21 +1,26 @@
 #pragma once
 
+#include <optional>
 #include <vector>
-#include <ChessGame/ChessGameData.hpp>
 #include <ChessGame/Enums.hpp>
+#include <ChessGame/BoardPositionToPossibleMovesMap.hpp>
 
-std::vector<ChessGameData::MoveType> getPossibleMovesForPiece(
+class Move;
+class ChessGame;
+class ChessGameData;
+
+std::vector<Move> getPossibleMovesForPiece(
         const ChessGameData& source,
         unsigned col,
         unsigned row);
 
-std::vector<ChessGameData::MoveType> getAllPossibleMovesForPlayer(
+std::vector<Move> getAllPossibleMovesForPlayer(
         const ChessGameData& source,
         PlayerColor player);
 
 Ownership getOwnershipOfFieldFrom(
         const ChessGameData& source,
-        ChessGameData::MoveType move);
+        Move move);
 
 bool isPlayerInCheck(
         const ChessGameData& source,
@@ -23,7 +28,9 @@ bool isPlayerInCheck(
 
 void filterOutMovesThatResultInCheck(
         const ChessGameData& gameState,
-        std::vector<ChessGameData::MoveType>& moves,
+        std::vector<Move>& moves,
         PlayerColor color);
 
 int evalGameState(const ChessGameData& source, PlayerColor color);
+std::optional<BoardPosition> getPawnAtEnd(const ChessGameData& gameState, PlayerColor color);
+void applyMoveToChessGame(const Move& move, ChessGame& chessGame, const BoardPositionToPossibleMovesMap& possibleMoves);

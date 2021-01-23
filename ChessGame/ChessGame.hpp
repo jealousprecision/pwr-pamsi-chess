@@ -10,26 +10,21 @@
 class ChessGame
 {
 public:
-    struct MoveEvent
-    {
-        Player& player;
-        ChessGameData::MoveType moveType;
-    };
-
     ChessGame();
 
     void registerPlayer(Player& player);
     Player& getCurrentPlayer();
     Player& getPlayer(PlayerColor color);
     void start();
-    void playerMoveCallback(Player& player, ChessGameData::MoveType move);
+    void playerMoveCallback(Move move);
 
     PlayerColor currentPlayerColor = PlayerColor::White;
     ChessGameData gameState;
     ChessGameStateMachine stateMachine;
 
-    std::queue<MoveEvent> waitingMoves;
-    std::optional<ChessGameData::MoveType> lastMove;
+    std::queue<Move> waitingMoves;
+    std::optional<Move> lastMove;
+    std::optional<PlayerColor> playerThatWon;
 
 
 private:

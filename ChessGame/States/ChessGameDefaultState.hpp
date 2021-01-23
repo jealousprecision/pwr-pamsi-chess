@@ -7,16 +7,14 @@ class ChessGame;
 class ChessGameDefaultState : public IChessGameState
 {
 public:
-    ChessGameDefaultState(ChessGame& game) :
-        game_(game)
-    {}
+    ChessGameDefaultState(ChessGame& chessGame);
 
     void onInit() override;
-    void update() override;
+    bool applyMove(const Move& move) override;
     void onExit() override;
     const BoardPositionToPossibleMovesMap& getPossibleMoves() const override;
 
-protected:
+private:
     void initPossibleMoves_();
 
     ChessGame& game_;

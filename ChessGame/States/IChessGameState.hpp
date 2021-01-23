@@ -1,16 +1,16 @@
 #pragma once
 
-#include <ChessGame/ChessGameData.hpp>
+#include <ChessGame/BoardPositionToPossibleMovesMap.hpp>
+
+class Move;
 
 class IChessGameState
 {
 public:
     virtual ~IChessGameState() = default;
 
-    virtual void onInit() {}
-    virtual void update() = 0;
-    virtual void onExit() {}
+    virtual void onInit() = 0;
+    virtual bool applyMove(const Move& move) = 0;
+    virtual void onExit() = 0;
     virtual const BoardPositionToPossibleMovesMap& getPossibleMoves() const = 0;
-
-    void checkIfPromotionAvalaibleAndHandleIt();
 };

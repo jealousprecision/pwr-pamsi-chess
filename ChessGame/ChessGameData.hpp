@@ -5,6 +5,23 @@
 #include <unordered_map>
 
 #include <ChessGame/Enums.hpp>
+#include <ChessGame/Player.hpp>
+
+struct Move
+{
+    unsigned colFrom, rowFrom;
+    unsigned colTo, rowTo;
+};
+
+std::ostream& operator<<(std::ostream& os, const Move& obj);
+std::string toString(const Move& obj);
+bool operator==(Move lhs, Move rhs);
+
+struct MoveEvent
+{
+    Player& player;
+    Move moveType;
+};
 
 struct Field
 {
@@ -16,36 +33,11 @@ using GameMatrix = std::vector<std::vector<Field>>;
 
 struct ChessGameData
 {
-    struct MoveType
-    {
-        unsigned colFrom, rowFrom;
-        unsigned colTo, rowTo;
-    };
-
     ChessGameData();
 
-    void apply(MoveType move);
+    void apply(Move move);
 
     GameMatrix matrix;
 };
 
-std::ostream& operator<<(std::ostream& os, const ChessGameData::MoveType& obj);
-std::string toString(const ChessGameData::MoveType& obj);
-bool operator==(ChessGameData::MoveType lhs, ChessGameData::MoveType rhs);
 
-struct BoardPosition
-{
-    unsigned col, row;
-};
-
-BoardPosition getBoardPosition_From(const ChessGameData::MoveType& obj);
-
-struct BoardPositionHash
-{
-    uint16_t operator()(BoardPosition pos) const;
-};
-
-bool operator==(BoardPosition lhs, BoardPosition rhs);
-
-using BoardPositionToPossibleMovesMap = std::unordered_map<
-    BoardPosition, std::vector<ChessGameData::MoveType>, BoardPositionHash>;

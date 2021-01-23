@@ -24,7 +24,9 @@ void initSecondRow(ChessGameData& state, unsigned row, Ownership owner)
 {
     auto& b = state.matrix;
     for (unsigned col = 0; col < 8; ++col)
+    {
         b[col][row] = Field{owner, PieceType::Pawn};
+    }
 }
 
 }  // namespace
@@ -39,20 +41,20 @@ ChessGameData::ChessGameData() :
     initSecondRow(*this, 6, Ownership::Black);
 }
 
-void ChessGameData::apply(ChessGameData::MoveType move)
+void ChessGameData::apply(Move move)
 {
     matrix[move.colTo][move.rowTo] = matrix[move.colFrom][move.rowFrom];
     matrix[move.colFrom][move.rowFrom] = Field();
 }
 
-std::ostream& operator<<(std::ostream& os, const ChessGameData::MoveType& obj)
+std::ostream& operator<<(std::ostream& os, const Move& obj)
 {
     constexpr char dictionary[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
     return os << dictionary[obj.colFrom] << obj.rowFrom + 1 << " => "
         << dictionary[obj.colTo] << obj.rowTo + 1;
 }
 
-std::string toString(const ChessGameData::MoveType& obj)
+std::string toString(const Move& obj)
 {
     std::stringstream ssr;
     ssr << obj;
@@ -68,30 +70,13 @@ Ownership negate(Ownership original)
     case Ownership::Black:
         return Ownership::White;
     default:
-        throw std::runtime_error("negate(): Ownership vlaue not found");
+        throw std::runtime_error("negate(): Ownership value not found");
     }
 }
 
-bool operator==(ChessGameData::MoveType lhs, ChessGameData::MoveType rhs)
+bool operator==(Move lhs, Move rhs)
 {
     return std::tie(lhs.colFrom, lhs.rowFrom, lhs.colTo, lhs.rowTo)
         == std::tie(rhs.colFrom, rhs.rowFrom, rhs.colTo, rhs.rowTo);
 }
 
-BoardPosition getBoardPosition_From(const ChessGameData::MoveType& obj)
-{
-    return BoardPosition{obj.colFrom, obj.rowFrom};
-}
-
-uint16_t BoardPositionHash::operator()(BoardPosition pos) const
-{
-    uint16_t result = static_cast<uint8_t>(pos.col);
-    result <<= 8;
-    result += static_cast<uint8_t>(pos.row);
-    return result;
-}
-
-bool operator==(BoardPosition lhs, BoardPosition rhs)
-{
-    return lhs.col == rhs.col && lhs.row == rhs.row;
-}
